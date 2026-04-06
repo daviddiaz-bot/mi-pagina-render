@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Menú Dinámico - Render</title>
+    <title>Mi Espacio Digital - Render</title>
     <style>
         :root {
             --primary: #6366f1;
@@ -33,7 +33,6 @@
             overflow-x: hidden;
         }
 
-        /* Fondo animado sutil */
         body::before {
             content: '';
             position: fixed;
@@ -146,20 +145,6 @@
             z-index: 1;
         }
 
-        .badge {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
         @keyframes fadeInDown {
             from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
@@ -184,26 +169,39 @@
     </header>
 
     <div class="menu-container">
-        <!-- Tarjeta 1 -->
-        <a href="#" class="card">
-            <span class="badge">Nuevo</span>
-            <div class="icon-box">🚀</div>
-            <h2>Proyectos Web</h2>
-            <p>Aplicaciones interactivas construidas con las últimas tecnologías web.</p>
+        <!-- Aula Virtual -->
+        <a href="aulavirtual.html" class="card">
+            <div class="icon-box">🎓</div>
+            <h2>Aula Virtual</h2>
+            <p>Accede a la plataforma de aprendizaje y recursos educativos.</p>
         </a>
 
-        <!-- Tarjeta 2 -->
-        <a href="#" class="card">
-            <div class="icon-box">🎨</div>
-            <h2>Diseño UI/UX</h2>
-            <p>Interfaces modernas enfocadas en la experiencia del usuario y estética.</p>
+        <!-- Chat IA -->
+        <a href="chatIA.html" class="card">
+            <div class="icon-box">🤖</div>
+            <h2>Chat IA</h2>
+            <p>Interactúa con mi asistente inteligente personalizado.</p>
         </a>
 
-        <!-- Tarjeta 3 -->
-        <a href="#" class="card">
-            <div class="icon-box">🛠️</div>
-            <h2>Herramientas</h2>
-            <p>Utilidades y scripts diseñados para optimizar flujos de trabajo diarios.</p>
+        <!-- Herramienta de Conexión -->
+        <a href="HerramientaConexion.html" class="card">
+            <div class="icon-box">🔌</div>
+            <h2>Conexión</h2>
+            <p>Herramienta para gestionar y probar conexiones de red.</p>
+        </a>
+
+        <!-- Kubernetes -->
+        <a href="Kubernetes.html" class="card">
+            <div class="icon-box">☸️</div>
+            <h2>Kubernetes</h2>
+            <p>Panel de control y monitoreo de clusters de contenedores.</p>
+        </a>
+
+        <!-- Servidor MCP -->
+        <a href="ServidorMCP.html" class="card">
+            <div class="icon-box">🖥️</div>
+            <h2>Servidor MCP</h2>
+            <p>Administración y estado del servidor Model Context Protocol.</p>
         </a>
     </div>
 

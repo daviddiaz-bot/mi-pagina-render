@@ -1,1 +1,1437 @@
-<html><body><h1>Mi Pagina en Render</h1></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual de Despliegue - AgenteChat v2.0 con n8n</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+      --code-bg: #1e293b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .version-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.2);
+      padding: 5px 15px;
+      border-radius: 20px;
+      margin-top: 15px;
+      font-size: 0.9rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+      background: var(--card);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .nav-tab {
+      padding: 10px 20px;
+      background: var(--bg);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .nav-tab:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .nav-tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card h3 {
+      color: var(--text);
+      margin: 20px 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .warning-box {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .success-box {
+      background: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .error-box {
+      background: #fef2f2;
+      border-left: 4px solid var(--error);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .code-block {
+      background: var(--code-bg);
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      position: relative;
+      margin: 15px 0;
+    }
+
+    .code-block code {
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 0.9rem;
+      white-space: pre;
+      display: block;
+      line-height: 1.5;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.3s;
+      z-index: 10;
+    }
+
+    .copy-btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+    }
+
+    .step-list {
+      counter-reset: step-counter;
+      list-style: none;
+      padding: 0;
+    }
+
+    .step-list li {
+      position: relative;
+      padding-left: 50px;
+      margin-bottom: 20px;
+      min-height: 40px;
+    }
+
+    .step-list li::before {
+      counter-increment: step-counter;
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 35px;
+      height: 35px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    .config-table th,
+    .config-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .config-table th {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .config-table tr:hover {
+      background: #f8fafc;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    .progress-bar .progress {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li {
+      padding: 10px 15px;
+      margin: 5px 0;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .checklist li:hover {
+      background: #eff6ff;
+    }
+
+    .checklist li.checked {
+      background: #f0fdf4;
+      text-decoration: line-through;
+      color: var(--secondary);
+    }
+
+    .checklist li::before {
+      content: '☐';
+      font-size: 1.2rem;
+    }
+
+    .checklist li.checked::before {
+      content: '☑';
+      color: var(--success);
+    }
+
+    .accordion {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      background: var(--bg);
+      padding: 15px 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .accordion-header:hover {
+      background: #eff6ff;
+    }
+
+    .accordion-header .icon {
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .accordion.open .accordion-header .icon {
+      transform: rotate(180deg);
+    }
+
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .accordion.open .accordion-content {
+      max-height: 2000px;
+    }
+
+    .accordion-body {
+      padding: 20px;
+    }
+
+    .architecture-diagram {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 20px 0;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      text-align: left;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .feature-card {
+      background: var(--bg);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary);
+    }
+
+    .feature-card .icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .feature-card h4 {
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 30px;
+      background: var(--card);
+      margin-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer p {
+      color: var(--secondary);
+      margin: 5px 0;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+
+      .nav-tabs {
+        flex-direction: column;
+      }
+
+      .nav-tab {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .architecture-diagram {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🚀 Manual de Despliegue AgenteChat</h1>
+    <p>Agente Inteligente con n8n, PostgreSQL y Google Gemini</p>
+    <div class="version-badge">
+      📦 Node.js 18+ | 🗄️ PostgreSQL 16 | 🤖 n8n v1+ | ✨ Google Gemini
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Arquitectura -->
+    <div class="card">
+      <h2>🏗️ Arquitectura del Sistema</h2>
+      <div class="architecture-diagram">ARQUITECTURA AGENTECHAT - n8n + PostgreSQL + Google Gemini
+═════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────┐
+│  FRONTEND (192.168.1.6:3000)                                    │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ • Modal de autenticación por email                       │  │
+│  │ • Interfaz de chat en tiempo real                        │  │
+│  │ • HTML/CSS/JavaScript responsivo                         │  │
+│  └────────────────────┬─────────────────────────────────────┘  │
+│                       │ POST /api/chat                          │
+│                       │ {email_usuario, message}                │
+└───────────────────────┼─────────────────────────────────────────┘
+                        │ HTTP/JSON
+                        ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  BACKEND EXPRESS (192.168.1.6:3000)                             │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │ • Recibe solicitud POST /api/chat                        │  │
+│  │ • Valida email de cliente                               │  │
+│  │ • Envía webhook a n8n                                   │  │
+│  │ • Retorna respuesta al frontend                          │  │
+│  └────────────────────┬─────────────────────────────────────┘  │
+│                       │                                          │
+│  n8n-service.js:      │ HTTP POST                               │
+│  http://192.168.1.12:5678/webhook/ai-agent-chat-sql            │
+└───────────────────────┼─────────────────────────────────────────┘
+                        │
+                        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  n8n WORKFLOW ENGINE (192.168.1.12:5678)                         │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │ Workflow: "AgenteChat - PostgreSQL AI Agent"              │ │
+│  │ Status: Published (activo)                                │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                                                                  │
+│  1. [Webhook] ──────────→ Recibe {email_usuario, message}       │
+│                                                                  │
+│  2. [PostgreSQL] ───────→ SELECT cliente, email,                │
+│                          ticket_id, asunto, estado, prioridad   │
+│                          FROM clientes c                         │
+│                          LEFT JOIN tickets t                     │
+│                          ON c.id = t.cliente_id                  │
+│                          WHERE email = usuario                   │
+│                          LIMIT 5                                 │
+│                                 │                                │
+│                                 ▼                                │
+│  3. [Preparar Contexto] → JavaScript procesa datos             │
+│     (n8n Expression Engine)    ${$input.all()} → Todos tickets  │
+│                          Formatea: "Cliente: Juan, Tickets:..."  │
+│                                 │                                │
+│                                 ▼                                │
+│  4. [AI Agent] ────────→ Integración con Google Gemini          │
+│     • Modelo: gemini-pro-chat                                    │
+│     • System Prompt: Asistente de soporte al cliente             │
+│     • Input: {contexto, mensaje}                                │
+│     • Output: Respuesta generada por IA                          │
+│                                 │                                │
+│                                 ▼                                │
+│  5. [Response] ────────→ Retorna JSON al backend                │
+│     {status: 200, response: "Respuesta del agente..."}           │
+│                                                                  │
+└──────────────┬──────────────────────────────────────────────────┘
+               │ SELECT queries                │ API Gemini
+               │                               │
+               ▼                               ▼
+┌──────────────────────┐              ┌──────────────────────────┐
+│  PostgreSQL 16       │              │  Google Gemini API       │
+│  (192.168.1.6:5433)  │              │  (Cloud - ai.google.com) │
+├──────────────────────┤              │                          │
+│ DB: customer_service │              │ gemini-pro-chat model    │
+│                      │              │ Genera respuestas        │
+│ Tables:              │              │ contextuales             │
+│ • clientes (id, name)│              │                          │
+│ • tickets (id, clie) │              │ Requiere:                │
+│ • interacciones      │              │ - Google API Key         │
+│                      │              │ - n8n configurado        │
+│                      │              │                          │
+└──────────────────────┘              └──────────────────────────┘</div>
+      
+      <div class="info-box">
+        <strong>📋 Flujo de Usuario Completo (Ejemplo):</strong>
+        <ol>
+          <li><strong>Usuario</strong>: Ingresa email "usuario161@correo.co" en modal</li>
+          <li><strong>Frontend</strong>: Valida email y muestra interfaz de chat</li>
+          <li><strong>Usuario</strong>: Escribe mensaje "¿Cuál es el estado de mi ticket?"</li>
+          <li><strong>Backend</strong>: Transmite {email: "usuario161@correo.co", message: "¿Cuál es..."} a n8n</li>
+          <li><strong>n8n Webhook</strong>: Recibe solicitud</li>
+          <li><strong>PostgreSQL</strong>: Ejecuta LEFT JOIN → Retorna 2 tickets del cliente:</li>
+          <li class="info-box" style="margin-left: 2rem;">Ticket #664: "Problema de login", estado: "Abierto", prioridad: "Alta"</li>
+          <li class="info-box" style="margin-left: 2rem;">Ticket #1048: "Consulta de factura", estado: "Resuelto", prioridad: "Media"</li>
+          <li><strong>Preparar Contexto</strong>: Formatea datos → "Cliente: Juan García, Email: usuario161@correo.co, Tiene 2 tickets: #664 (Abierto, Alta)..."</li>
+          <li><strong>Google Gemini</strong>: Procesa contexto + mensaje → Genera: "Hola Juan, veo que tienes 2 tickets. El #664 sigue abierto con prioridad alta. Te ayudaré..."</li>
+          <li><strong>n8n Response</strong>: Retorna JSON con respuesta</li>
+          <li><strong>Backend</strong>: Recibe respuesta y la envía al frontend</li>
+          <li><strong>Frontend</strong>: Muestra respuesta en chat en tiempo real</li>
+        </ol>
+      </div>
+
+      <h3>✨ Características Principales</h3>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon">🔐</div>
+          <h4>Autenticación Modal</h4>
+          <p>Recolecta email de usuario antes del chat para acceso contextualizad</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">📊</div>
+          <h4>Datos en PostgreSQL</h4>
+          <p>Consulta histórico de tickets y datos de cliente en tiempo real</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">⚙️</div>
+          <h4>Orquestación n8n</h4>
+          <p>Flujo sin código con nodos visuales, fácil de mantener</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🤖</div>
+          <h4>IA Inteligente</h4>
+          <p>Respuestas contextuales con Google Gemini procesando datos reales</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navegación -->
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showTab('arquitectura')">
+        🏗️ Arquitectura
+      </button>
+      <button class="nav-tab" onclick="showTab('requisitos')">
+        📋 Requisitos
+      </button>
+      <button class="nav-tab" onclick="showTab('configuracion')">
+        ⚙️ Configuración
+      </button>
+      <button class="nav-tab" onclick="showTab('despliegue')">
+        🚀 Despliegue
+      </button>
+      <button class="nav-tab" onclick="showTab('verificacion')">
+        ✅ Verificación
+      </button>
+      <button class="nav-tab" onclick="showTab('troubleshooting')">
+        🔧 Solución de Problemas
+      </button>
+    </div>
+
+    <!-- Tab 1: Arquitectura (resumen) -->
+    <div id="arquitectura" class="tab-content active">
+      <div class="card">
+        <h2>🏗️ Componentes del Sistema</h2>
+        
+        <h3>Frontend (Chat Web)</h3>
+        <table class="config-table">
+          <tr>
+            <th>Archivo</th>
+            <th>Descripción</th>
+            <th>Tecnología</th>
+          </tr>
+          <tr>
+            <td>index.html</td>
+            <td>Interfaz de usuario con modal de email</td>
+            <td>HTML5</td>
+          </tr>
+          <tr>
+            <td>style.css</td>
+            <td>Estilos responsive y animaciones</td>
+            <td>CSS3</td>
+          </tr>
+          <tr>
+            <td>script.js</td>
+            <td>Lógica de chat, modal y comunicación HTTP</td>
+            <td>JavaScript ES6+</td>
+          </tr>
+        </table>
+
+        <h3>Backend (Node.js Express)</h3>
+        <table class="config-table">
+          <tr>
+            <th>Archivo</th>
+            <th>Ruta</th>
+            <th>Descripción</th>
+          </tr>
+          <tr>
+            <td>server.js</td>
+            <td>chat-app-backend/</td>
+            <td>Servidor Express, gestiona rutas y middleware</td>
+          </tr>
+          <tr>
+            <td>n8n-service.js</td>
+            <td>chat-app-backend/services/</td>
+            <td>Cliente HTTP para comunicación con n8n webhook</td>
+          </tr>
+          <tr>
+            <td>postgres-service.js</td>
+            <td>chat-app-backend/services/</td>
+            <td>Conexión a PostgreSQL (si es necesaria)</td>
+          </tr>
+        </table>
+
+        <h3>n8n Workflow</h3>
+        <table class="config-table">
+          <tr>
+            <th>Nodo</th>
+            <th>Tipo</th>
+            <th>Configuración</th>
+          </tr>
+          <tr>
+            <td>Webhook</td>
+            <td>Trigger</td>
+            <td>Escucha POST en /webhook/ai-agent-chat-sql</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td>Acción</td>
+            <td>SELECT cliente, email, ticket_id... FROM clientes LEFT JOIN tickets</td>
+          </tr>
+          <tr>
+            <td>Preparar Contexto</td>
+            <td>JavaScript</td>
+            <td>Formatea datos: {input.all()} → cada ticket en contexto</td>
+          </tr>
+          <tr>
+            <td>AI Agent</td>
+            <td>Acción</td>
+            <td>Google Gemini + system prompt de soporte</td>
+          </tr>
+          <tr>
+            <td>Response</td>
+            <td>Acción</td>
+            <td>Retorna JSON con response al backend</td>
+          </tr>
+        </table>
+
+        <h3>Base de Datos PostgreSQL</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code>-- Conexión:
+-- Host: 192.168.1.6
+-- Puerto: 5433
+-- Base de datos: customer_service
+-- Usuario: tu_usuario
+
+-- Tablas principales:
+
+-- 1. clientes
+CREATE TABLE clientes (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  telefono VARCHAR(20),
+  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. tickets
+CREATE TABLE tickets (
+  id SERIAL PRIMARY KEY,
+  cliente_id INTEGER REFERENCES clientes(id),
+  asunto VARCHAR(255) NOT NULL,
+  estado VARCHAR(50),
+  prioridad VARCHAR(20),
+  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. interacciones
+CREATE TABLE interacciones (
+  id SERIAL PRIMARY KEY,
+  ticket_id INTEGER REFERENCES tickets(id),
+  tipo VARCHAR(50),
+  contenido TEXT,
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);</code>
+        </div>
+
+        <h3>Servicios en Red</h3>
+        <table class="config-table">
+          <tr>
+            <th>Servicio</th>
+            <th>Host:Puerto</th>
+            <th>Protocolo</th>
+            <th>Estado</th>
+          </tr>
+          <tr>
+            <td>Frontend (Browser)</td>
+            <td>http://192.168.1.6:3000</td>
+            <td>HTTP</td>
+            <td>Accesible desde cliente</td>
+          </tr>
+          <tr>
+            <td>Backend Express</td>
+            <td>192.168.1.6:3000</td>
+            <td>HTTP</td>
+            <td>Escucha en puerto 3000</td>
+          </tr>
+          <tr>
+            <td>n8n Webhook</td>
+            <td>192.168.1.12:5678</td>
+            <td>HTTP/HTTPS</td>
+            <td>Orquestación</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td>192.168.1.6:5433</td>
+            <td>PostgreSQL</td>
+            <td>Base de datos</td>
+          </tr>
+          <tr>
+            <td>Google Gemini API</td>
+            <td>ai.google.com</td>
+            <td>HTTPS</td>
+            <td>Nube (externa)</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab 2: Requisitos -->
+    <div id="requisitos" class="tab-content">
+      <div class="card">
+        <h2>📋 Requisitos del Sistema</h2>
+        
+        <h3>Software Requerido</h3>
+        <table class="config-table">
+          <tr>
+            <th>Componente</th>
+            <th>Versión Mínima</th>
+            <th>Tipo</th>
+            <th>Requerido</th>
+          </tr>
+          <tr>
+            <td>Node.js</td>
+            <td>18.x LTS</td>
+            <td>Runtime</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td>npm</td>
+            <td>9.x</td>
+            <td>Gestor de paquetes</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL</td>
+            <td>13.x+</td>
+            <td>Base de datos</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td>n8n</td>
+            <td>1.x+</td>
+            <td>Orquestación</td>
+            <td>✅ Sí</td>
+          </tr>
+          <tr>
+            <td>PM2</td>
+            <td>5.x</td>
+            <td>Gestor de procesos</td>
+            <td>⭐ Recomendado</td>
+          </tr>
+          <tr>
+            <td>Docker</td>
+            <td>20.x+</td>
+            <td>Containerización</td>
+            <td>⭐ Opcional</td>
+          </tr>
+        </table>
+
+        <h3>API Keys y Credenciales</h3>
+        <table class="config-table">
+          <tr>
+            <th>Servicio</th>
+            <th>Configurado En</th>
+            <th>Descripción</th>
+            <th>Prioridad</th>
+          </tr>
+          <tr>
+            <td>Google Gemini API Key</td>
+            <td>n8n (AI Agent node)</td>
+            <td>Para acceso a modelo gemini-pro-chat</td>
+            <td>🔴 Crítica</td>
+          </tr>
+          <tr>
+            <td>PostgreSQL Credentials</td>
+            <td>n8n (PostgreSQL node)</td>
+            <td>usuario, contraseña, host, puerto, nombre BD</td>
+            <td>🔴 Crítica</td>
+          </tr>
+          <tr>
+            <td>n8n Webhook URL</td>
+            <td>Backend .env (N8N_WEBHOOK_URL)</td>
+            <td>http://192.168.1.12:5678/webhook/ai-agent-chat-sql</td>
+            <td>🔴 Crítica</td>
+          </tr>
+        </table>
+
+        <h3>Requisitos de Red</h3>
+        <div class="info-box">
+          <strong>Conectividad requerida:</strong>
+          <ul>
+            <li>Backend (192.168.1.6) ↔ n8n (192.168.1.12) - LAN interna</li>
+            <li>Backend ↔ PostgreSQL (192.168.1.6:5433) - Localhost o LAN</li>
+            <li>n8n ↔ Google Gemini API - Internet externo (HTTPS)</li>
+            <li>Usuario ↔ Frontend - HTTP en puerto 3000</li>
+          </ul>
+        </div>
+
+        <h3>Checklist de Preparación</h3>
+        <ul class="checklist" id="checklist-requisitos">
+          <li onclick="toggleCheck(this)">Node.js 18+ instalado y verificado</li>
+          <li onclick="toggleCheck(this)">PostgreSQL 13+ instalado con BD customer_service</li>
+          <li onclick="toggleCheck(this)">n8n ejecutándose en 192.168.1.12:5678</li>
+          <li onclick="toggleCheck(this)">Google Gemini API Key disponible</li>
+          <li onclick="toggleCheck(this)">PM2 instalado globalmente (npm install -g pm2)</li>
+          <li onclick="toggleCheck(this)">Acceso SSH/RDP a servidores requeridos</li>
+          <li onclick="toggleCheck(this)">Conexión de red entre backend y n8n verificada</li>
+          <li onclick="toggleCheck(this)">Acceso a internet desde n8n para Google API</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 3: Configuración -->
+    <div id="configuracion" class="tab-content">
+      <div class="card">
+        <h2>⚙️ Configuración</h2>
+
+        <h3>1. Variables de Entorno Backend (.env)</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># AgenteChat Backend Configuration
+# =====================================
+
+# SERVIDOR
+PORT=3000
+SERVER_HOST=0.0.0.0
+
+# n8n WEBHOOK - CRÍTICO
+# URL exacta del webhook publicado en n8n
+N8N_WEBHOOK_URL=http://192.168.1.12:5678/webhook/ai-agent-chat-sql
+
+# POSTGRESQL (Opcional - solo si backend conecta directamente)
+DB_HOST=192.168.1.6
+DB_PORT=5433
+DB_NAME=customer_service
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+
+# CORS - Si está detrás de proxy
+CORS_ORIGIN=*
+
+# LOG LEVEL
+LOG_LEVEL=info</code>
+        </div>
+
+        <h3>2. Configuración de n8n</h3>
+        <h4>2.1 Nodo PostgreSQL</h4>
+        <div class="success-box">
+          <strong>Credenciales de conexión:</strong>
+          <ul>
+            <li>Host: 192.168.1.6</li>
+            <li>Puerto: 5433</li>
+            <li>Usuario: tu_usuario</li>
+            <li>Contraseña: tu_password</li>
+            <li>Base de datos: customer_service</li>
+          </ul>
+        </div>
+
+        <h4>2.2 SQL Query en PostgreSQL Node</h4>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code>SELECT 
+  c.nombre AS cliente,
+  c.email,
+  t.id AS ticket_id,
+  t.asunto,
+  t.estado,
+  t.prioridad
+FROM clientes c
+LEFT JOIN tickets t ON c.id = t.cliente_id
+WHERE TRIM(LOWER(c.email)) = TRIM(LOWER('{{ $json.email_usuario }}'))
+LIMIT 5</code>
+        </div>
+
+        <h4>2.3 Preparar Contexto (JavaScript Node)</h4>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code>// Obtener TODOS los items (no solo el primero)
+const items = $input.all();
+
+let dbContext = "";
+
+if (items.length > 0 && items[0].json.ticket_id) {
+  // Hay tickets para este cliente
+  items.forEach((item, i) => {
+    const ticket = item.json;
+    dbContext += `Ticket #${ticket.ticket_id}: ${ticket.asunto} (${ticket.estado}, Prioridad: ${ticket.prioridad})\n`;
+  });
+} else if (items.length > 0) {
+  // Cliente existe pero sin tickets
+  const cliente = items[0].json;
+  dbContext = `Cliente: ${cliente.cliente} (${cliente.email}) - Sin tickets abiertos`;
+} else {
+  dbContext = "Cliente no encontrado en la base de datos";
+}
+
+return {
+  json: {
+    dbContext: dbContext
+  }
+};</code>
+        </div>
+
+        <h4>2.4 AI Agent Node (Google Gemini)</h4>
+        <div class="success-box">
+          <strong>Configuración del nodo AI Agent:</strong>
+          <ul>
+            <li>Modelo: gemini-pro-chat</li>
+            <li>System Prompt: "Eres un asistente de soporte al cliente profesional. Debes responder preguntas sobre los tickets y ayudar a resolver problemas basándote en los datos proporcionados."</li>
+            <li>User Message: "{{ Para referencia: {{ $node['Preparar Contexto'].json.dbContext }} \n\nPregunta del cliente: {{ $json.message }}"</li>
+            <li>Google Gemini API Key: [Configurar en credenciales]</li>
+          </ul>
+        </div>
+
+        <h3>3. Instalación de Dependencias Backend</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code>cd chat-app-backend
+
+# Instalar dependencias principales
+npm install
+
+# Dependencias típicas:
+# express - Servidor HTTP
+# dotenv - Variables de entorno
+# axios - Cliente HTTP para n8n
+# cors - Control de CORS
+# body-parser - Parseo de JSON</code>
+        </div>
+
+        <h3>4. Frontend - Actualizar URL del Backend (script.js)</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code>// En chat-frontend/script.js
+
+// La URL del backend debe ser accesible desde el navegador
+const API_BASE_URL = 'http://192.168.1.6:3000';  // Ajustar si es necesario
+
+// Si el frontend está en un servidor diferente:
+// const API_BASE_URL = 'http://192.168.1.6:3000';
+
+async function sendMessage() {
+  const message = document.getElementById('messageInput').value;
+  
+  const response = await fetch(`${API_BASE_URL}/api/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      message: message,
+      email_usuario: state.userEmail  // Email del modal
+    })
+  });
+  
+  const data = await response.json();
+  displayMessage(data.response, 'bot');
+}</code>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Despliegue -->
+    <div id="despliegue" class="tab-content">
+      <div class="card">
+        <h2>🚀 Despliegue</h2>
+
+        <h3>Paso 1: Verificar PostgreSQL</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Conectarse a PostgreSQL
+psql -h 192.168.1.6 -p 5433 -U tu_usuario -d customer_service
+
+# Verificar tablas
+\dt
+
+# Si las tablas no existen, crearlas:
+CREATE TABLE clientes (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(255),
+  email VARCHAR(255) UNIQUE
+);
+
+CREATE TABLE tickets (
+  id SERIAL PRIMARY KEY,
+  cliente_id INTEGER REFERENCES clientes(id),
+  asunto VARCHAR(255),
+  estado VARCHAR(50),
+  prioridad VARCHAR(20)
+);
+
+# Insertar datos de prueba
+INSERT INTO clientes (nombre, email) VALUES ('Juan García', 'usuario161@correo.co');
+INSERT INTO tickets (cliente_id, asunto, estado, prioridad) 
+VALUES (1, 'Problema de login', 'Abierto', 'Alta'),
+       (1, 'Consulta de factura', 'Resuelto', 'Media');</code>
+        </div>
+
+        <h3>Paso 2: Verificar n8n</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Verificar que n8n está corriendo
+curl http://192.168.1.12:5678/api/v1/workflows
+
+# Verificar workflow publicado
+# En la UI de n8n: http://192.168.1.12:5678
+# 1. Ir a workflows
+# 2. Buscar "AgenteChat - PostgreSQL AI Agent"
+# 3. Verificar que está "Published" (activo)
+# 4. Copiar la URL del webhook: /webhook/ai-agent-chat-sql</code>
+        </div>
+
+        <h3>Paso 3: Instalar y Ejecutar Backend</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Ir al directorio del backend
+cd chat-app-backend
+
+# Crear archivo .env
+cat > .env << 'EOF'
+PORT=3000
+SERVER_HOST=0.0.0.0
+N8N_WEBHOOK_URL=http://192.168.1.12:5678/webhook/ai-agent-chat-sql
+DB_HOST=192.168.1.6
+DB_PORT=5433
+DB_NAME=customer_service
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+EOF
+
+# Instalar dependencias
+npm install
+
+# Iniciar en modo desarrollo
+npm start
+
+# O en producción con PM2:
+pm2 start server.js --name "agente-chat"
+pm2 save</code>
+        </div>
+
+        <h3>Paso 4: Acceder al Frontend</h3>
+        <div class="success-box">
+          <strong>🌐 Abrir en Navegador:</strong>
+          <p>http://192.168.1.6:3000</p>
+          <p>Deberías ver un modal pidiendo un email para empezar el chat</p>
+        </div>
+
+        <h3>Progreso del Despliegue</h3>
+        <div class="progress-bar">
+          <div class="progress" id="progress-bar" style="width: 0%"></div>
+        </div>
+        <ul class="checklist" id="checklist-despliegue">
+          <li onclick="toggleCheck(this); updateProgress()">PostgreSQL accesible y BD creada</li>
+          <li onclick="toggleCheck(this); updateProgress()">n8n workflow publicado y webhook funcional</li>
+          <li onclick="toggleCheck(this); updateProgress()">Archivo .env backend configurado</li>
+          <li onclick="toggleCheck(this); updateProgress()">npm install - dependencias instaladas</li>
+          <li onclick="toggleCheck(this); updateProgress()">Backend iniciado (npm start)</li>
+          <li onclick="toggleCheck(this); updateProgress()">Frontend accesible en 192.168.1.6:3000</li>
+          <li onclick="toggleCheck(this); updateProgress()">PM2 configurado (si aplica)</li>
+          <li onclick="toggleCheck(this); updateProgress()">Prueba end-to-end completada exitosamente</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 5: Verificación -->
+    <div id="verificacion" class="tab-content">
+      <div class="card">
+        <h2>✅ Verificación</h2>
+
+        <h3>1. Verificar Backend</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Verify backend is running
+curl http://localhost:3000/
+
+# Expected response: HTML del frontend
+# Status: 200 OK</code>
+        </div>
+
+        <h3>2. Prueba de Integración n8n</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Enviar solicitud de prueba al backend
+# Esto disparará el webhook n8n
+
+curl -X POST http://192.168.1.6:3000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email_usuario": "usuario161@correo.co",
+    "message": "¿Cuál es el estado de mis tickets?"
+  }'
+
+# Respuesta esperada (200 OK):
+# {
+#   "success": true,
+#   "response": "Hola Juan García, veo que tienes 2 tickets..."
+# }</code>
+        </div>
+
+        <h3>3. Verificar Conectividad PostgreSQL desde n8n</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># En la UI de n8n:
+# 1. Ir al workflow "AgenteChat - PostgreSQL AI Agent"
+# 2. Hacer clic en el nodo "PostgreSQL"
+# 3. Test connection
+# Debe retornar: "Connection successful"
+
+# Alternativa CLI:
+psql -h 192.168.1.6 -p 5433 -U tu_usuario -d customer_service -c "SELECT COUNT(*) FROM clientes;"</code>
+        </div>
+
+        <h3>4. Verificar Google Gemini API</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># En la UI de n8n:
+# 1. Ir al nodo "AI Agent"
+# 2. Verificar que la credencial Google Gemini está configurada
+# 3. Test: Hacer clic en "Test"
+# Debe retornar una respuesta generada por IA
+
+# Para verificar la API Key:
+# https://makersuite.google.com/app/apikey</code>
+        </div>
+
+        <h3>5. Test End-to-End desde Navegador</h3>
+        <div class="success-box">
+          <strong>Pasos a seguir:</strong>
+          <ol>
+            <li>Abrir navegador en http://192.168.1.6:3000</li>
+            <li>Debería aparecer modal: "Bienvenido al Agente Chat"</li>
+            <li>Ingresar email: usuario161@correo.co</li>
+            <li>Click "Iniciar Chat"</li>
+            <li>En el chat, escribir mensaje: "¿Qué tickets tengo abiertos?"</li>
+            <li>Esperar respuesta del agente (3-5 segundos)</li>
+            <li>Respuesta esperada: "Hola Juan García, tienes 1 ticket abierto..."</li>
+          </ol>
+        </div>
+
+        <h3>Checklist de Verificación Final</h3>
+        <ul class="checklist" id="checklist-verificacion">
+          <li onclick="toggleCheck(this)">Backend responde en http://localhost:3000</li>
+          <li onclick="toggleCheck(this)">Frontend carga correctamente (modal visible)</li>
+          <li onclick="toggleCheck(this)">PostgreSQL accesible desde n8n</li>
+          <li onclick="toggleCheck(this)">Google Gemini API funcional</li>
+          <li onclick="toggleCheck(this)">Webhook n8n disparado correctamente</li>
+          <li onclick="toggleCheck(this)">Respuesta del agente recibida en frontend</li>
+          <li onclick="toggleCheck(this)">PM2 muestra app "online"</li>
+          <li onclick="toggleCheck(this)">Logs sin errores críticos</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Tab 6: Troubleshooting -->
+    <div id="troubleshooting" class="tab-content">
+      <div class="card">
+        <h2>🔧 Solución de Problemas</h2>
+
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>❌ Error: "Connection refused" en n8n-service</span>
+            <span class="icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p><strong>Causa:</strong> Backend no puede conectarse a n8n en 192.168.1.12:5678</p>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <code># Verificar que n8n está corriendo
+ping 192.168.1.12
+
+# Verificar puerto 5678 abierto
+telnet 192.168.1.12 5678
+
+# Verificar URL en .env
+grep N8N_WEBHOOK_URL chat-app-backend/.env
+
+# Debe ser HTTP (no HTTPS) en desarrollo
+# http://192.168.1.12:5678/webhook/ai-agent-chat-sql</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>❌ Error: "relation 'clientes' does not exist"</span>
+            <span class="icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p><strong>Causa:</strong> Las tablas de PostgreSQL no existen</p>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <code># Conectarse a PostgreSQL
+psql -h 192.168.1.6 -p 5433 -U tu_usuario -d customer_service
+
+# Crear tablas
+CREATE TABLE clientes (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE tickets (
+  id SERIAL PRIMARY KEY,
+  cliente_id INTEGER REFERENCES clientes(id),
+  asunto VARCHAR(255),
+  estado VARCHAR(50),
+  prioridad VARCHAR(20)
+);
+
+# Insertar datos de prueba
+INSERT INTO clientes (nombre, email) VALUES ('Juan García', 'usuario161@correo.co');
+INSERT INTO tickets (cliente_id, asunto, estado, prioridad) 
+VALUES (1, 'Test Ticket', 'Abierto', 'Alta');</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>❌ Error: "Preparar Contexto - Cannot read property 'ticket_id'"</span>
+            <span class="icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p><strong>Causa:</strong> Usar $input.first() en lugar de $input.all()</p>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <code># INCORRECTO:
+const item = $input.first().json;  // Solo devuelve 1 item
+
+# CORRECTO:
+const items = $input.all();  // Devuelve todos los items</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>❌ Error: "Port 3000 already in use"</span>
+            <span class="icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <code># Encontrar qué está usando el puerto
+netstat -tulpn | grep 3000
+
+# Matar el proceso
+kill -9 <PID>
+
+# O cambiar el puerto en .env
+PORT=3001</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" onclick="toggleAccordion(this)">
+          <div class="accordion-header">
+            <span>❌ Error: "Modal no aparece en frontend"</span>
+            <span class="icon">▼</span>
+          </div>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <p><strong>Causa:</strong> Problema en script.js o HTML</p>
+              <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                <code># 1. Verificar que index.html tiene el modal:
+grep -i "emailModal" chat-frontend/index.html
+
+# 2. Verificar que script.js llama showEmailModal():
+grep -i "showEmailModal" chat-frontend/script.js
+
+# 3. Verificar console del navegador (F12):
+# Buscar errores de JavaScript
+
+# 4. Ver respuesta HTTP:
+curl http://192.168.1.6:3000 | head -50</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Comandos de Diagnóstico Rápidos</h3>
+        <div class="code-block">
+          <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+          <code># Ver estado de PM2
+pm2 status
+
+# Ver logs del backend
+pm2 logs agente-chat
+
+# Verificar Node.js
+node --version
+npm --version
+
+# Verificar proceso Node corriendo
+ps aux | grep node
+
+# Verificar puerto 3000
+netstat -tulpn | grep 3000
+
+# Accesibilidad de n8n
+curl http://192.168.1.12:5678/api/v1/workflows
+
+# Accesibilidad de PostgreSQL
+pg_isready -h 192.168.1.6 -p 5433</code>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>📖 Manual de Despliegue - AgenteChat v2.0</p>
+    <p>🤖 Agente Inteligente con n8n, PostgreSQL y Google Gemini</p>
+    <p>📦 Node.js 18+ | 🗄️ PostgreSQL | 🤖 n8n | ✨ Google Gemini API</p>
+  </footer>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(tabId).classList.add('active');
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(tabId.substring(0, 4))) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    function copyCode(button) {
+      const codeBlock = button.parentElement;
+      const code = codeBlock.querySelector('code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        button.textContent = '¡Copiado!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = 'Copiar';
+          button.classList.remove('copied');
+        }, 2000);
+      });
+    }
+
+    function toggleCheck(item) {
+      item.classList.toggle('checked');
+    }
+
+    function updateProgress() {
+      const items = document.querySelectorAll('#checklist-despliegue li');
+      const checked = document.querySelectorAll('#checklist-despliegue li.checked');
+      const progress = (checked.length / items.length) * 100;
+      document.getElementById('progress-bar').style.width = progress + '%';
+    }
+
+    function toggleAccordion(accordion) {
+      accordion.classList.toggle('open');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showTab('arquitectura');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Conexiones</title>
+    <meta name="description" content="Herramienta web para consultar conexiones entrantes y salientes de servidores y exportar resultados." />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="./src/style.css" />
+    <script defer src="./src/main.js"></script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Herramienta de red</p>
+          <h1>Conexiones de servidores</h1>
+          <p class="lede">Carga un listado de servidores, introduce credenciales de dominio y obtén una vista consolidada de las conexiones entrantes y salientes. Exporta los datos a CSV o Excel.</p>
+        </div>
+        <div class="status-chip" id="status-chip">Listo para comenzar</div>
+      </header>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="label">Datos de entrada</p>
+            <h2>Archivo y credenciales</h2>
+            <p class="muted">Sube un archivo .txt con nombres de servidor (uno por línea) y proporciona usuario de dominio y contraseña.</p>
+          </div>
+          <div class="hint">Las contraseñas solo se usan en la sesión actual y no se almacenan.</div>
+        </div>
+        <form class="form" id="connection-form">
+          <div class="field-group">
+            <label for="domain">Dominio</label>
+            <input id="domain" name="domain" type="text" placeholder="contoso.local" autocomplete="on" />
+          </div>
+          <div class="field-group">
+            <label for="username">Usuario de dominio</label>
+            <input id="username" name="username" type="text" placeholder="admin" autocomplete="username" />
+          </div>
+          <div class="field-group">
+            <label for="password">Contraseña</label>
+            <input id="password" name="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <div class="field-group">
+            <label for="server-file">Archivo de servidores (.txt)</label>
+            <input id="server-file" name="server-file" type="file" accept=".txt" />
+            <p class="muted">Un nombre de servidor por línea.</p>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn ghost" id="clear-btn">Limpiar</button>
+            <button type="button" class="btn primary" id="run-btn">Consultar conexiones</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel" id="messages" hidden></section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <p class="label">Resultados</p>
+            <h2>Conexiones entrantes y salientes</h2>
+            <p class="muted">Tabla dinámica con estado de cada intento de conexión simulado.</p>
+          </div>
+          <div class="export-actions">
+            <button class="btn" id="export-csv">Exportar CSV</button>
+            <button class="btn" id="export-xls">Exportar Excel</button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="connections-table">
+            <thead>
+              <tr>
+                <th>Origen</th>
+                <th>Destino</th>
+                <th>Dirección</th>
+                <th>Tipo</th>
+                <th>Protocolo</th>
+                <th>TLS (versión)</th>
+                <th>Versiones habilitadas</th>
+                <th>Puerto</th>
+                <th>Estado</th>
+                <th>Latencia</th>
+                <th>Última revisión</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody id="connections-body">
+              <tr class="empty">
+                <td colspan="12">Sin datos aún. Carga servidores y consulta para ver resultados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

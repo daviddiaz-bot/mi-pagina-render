@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kubernetes: De Principiante a Profesional</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header/Navigation -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>KuberClass</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#inicio" class="nav-link">Inicio</a></li>
+                <li><a href="#sobre-curso" class="nav-link">Sobre el Curso</a></li>
+                <li><a href="#roadmap" class="nav-link">Roadmap</a></li>
+                <li><a href="#temas" class="nav-link">Temas</a></li>
+                <li><a href="#ejemplos" class="nav-link">Ejemplos</a></li>
+                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Kubernetes: De Principiante a Profesional</h1>
+            <p class="hero-subtitle">Domina la orquestación de contenedores y conviértete en un experto en DevOps</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToSection('sobre-curso')">Comenzar Aprendizaje</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('roadmap')">Ver Roadmap</button>
+            </div>
+        </div>
+        <div class="hero-background">
+            <div class="floating-card card1">Docker</div>
+            <div class="floating-card card2">Pods</div>
+            <div class="floating-card card3">Services</div>
+            <div class="floating-card card4">Deployment</div>
+        </div>
+    </section>
+
+    <!-- About Course Section -->
+    <section id="sobre-curso" class="about-course">
+        <div class="container">
+            <h2 class="section-title">Sobre Este Curso</h2>
+            <div class="course-intro">
+                <div class="intro-text">
+                    <p>Este curso completo te guiará desde los conceptos fundamentales de Kubernetes hasta técnicas avanzadas de orquestación de contenedores. Aprenderás todo lo necesario para diseñar, implementar y gestionar aplicaciones en clusters de Kubernetes en un entorno de producción.</p>
+                    
+                    <div class="highlights">
+                        <div class="highlight-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h4>Aprendizaje Progresivo</h4>
+                            <p>Desde lo básico hasta conceptos avanzados</p>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-code"></i>
+                            <h4>Ejemplos Prácticos</h4>
+                            <p>Código real y casos de uso reales</p>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-tools"></i>
+                            <h4>Hands-on Labs</h4>
+                            <p>Ejercicios interactivos y proyectos</p>
+                        </div>
+                        <div class="highlight-item">
+                            <i class="fas fa-certificate"></i>
+                            <h4>Certificación</h4>
+                            <p>Obtén tu certificado de finalización</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section id="roadmap" class="roadmap">
+        <div class="container">
+            <h2 class="section-title">Roadmap del Curso</h2>
+            <p class="section-subtitle">Tu camino hacia la maestría de Kubernetes</p>
+            
+            <div class="timeline">
+                <!-- Level 1: Principiante -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <span class="level-badge level-1">Nivel 1</span>
+                        <span class="milestone">0%</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Fundamentales de Kubernetes</h3>
+                        <p class="timeline-duration">Módulos 1-4 | 2-3 semanas</p>
+                        <p class="timeline-description">Introducción completa a Kubernetes, arquitectura básica y configuración inicial.</p>
+                        <div class="learning-outcomes">
+                            <h4>Resultados de Aprendizaje:</h4>
+                            <ul>
+                                <li>Entender la arquitectura de Kubernetes</li>
+                                <li>Configurar tu primer cluster</li>
+                                <li>Trabajar con Pods y contenedores</li>
+                                <li>Comprender ReplicaSets y Deployments básicos</li>
+                            </ul>
+                        </div>
+                        <button class="btn-expand" onclick="expandLevel(this)">
+                            <i class="fas fa-chevron-down"></i> Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Level 2: Intermedio -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <span class="level-badge level-2">Nivel 2</span>
+                        <span class="milestone">30%</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Objetos y Recursos Avanzados</h3>
+                        <p class="timeline-duration">Módulos 5-8 | 3-4 semanas</p>
+                        <p class="timeline-description">Exploración profunda de objetos de Kubernetes y gestión de recursos complejos.</p>
+                        <div class="learning-outcomes">
+                            <h4>Resultados de Aprendizaje:</h4>
+                            <ul>
+                                <li>Services y networking avanzado</li>
+                                <li>ConfigMaps y Secrets</li>
+                                <li>Persistent Volumes y storage</li>
+                                <li>StatefulSets y DaemonSets</li>
+                            </ul>
+                        </div>
+                        <button class="btn-expand" onclick="expandLevel(this)">
+                            <i class="fas fa-chevron-down"></i> Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Level 3: Avanzado -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <span class="level-badge level-3">Nivel 3</span>
+                        <span class="milestone">60%</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Operaciones y Producción</h3>
+                        <p class="timeline-duration">Módulos 9-12 | 4-5 semanas</p>
+                        <p class="timeline-description">Gestión operativa, monitoreo y optimización de clusters en producción.</p>
+                        <div class="learning-outcomes">
+                            <h4>Resultados de Aprendizaje:</h4>
+                            <ul>
+                                <li>RBAC y seguridad en Kubernetes</li>
+                                <li>Monitoreo y logging con Prometheus y ELK</li>
+                                <li>Auto-scaling y resource management</li>
+                                <li>Helm charts y package management</li>
+                            </ul>
+                        </div>
+                        <button class="btn-expand" onclick="expandLevel(this)">
+                            <i class="fas fa-chevron-down"></i> Detalles
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Level 4: Experto -->
+                <div class="timeline-item">
+                    <div class="timeline-marker">
+                        <span class="level-badge level-4">Nivel 4</span>
+                        <span class="milestone">100%</span>
+                    </div>
+                    <div class="timeline-content">
+                        <h3>Maestría y Arquitectura</h3>
+                        <p class="timeline-duration">Módulos 13-16 | 5-6 semanas</p>
+                        <p class="timeline-description">Diseño de arquitecturas complejas, optimización y mejores prácticas empresariales.</p>
+                        <div class="learning-outcomes">
+                            <h4>Resultados de Aprendizaje:</h4>
+                            <ul>
+                                <li>Operadores personalizados y CRD</li>
+                                <li>Multi-cluster y GitOps</li>
+                                <li>Optimización de rendimiento</li>
+                                <li>Arquitecturas cloud-native escalables</li>
+                            </ul>
+                        </div>
+                        <button class="btn-expand" onclick="expandLevel(this)">
+                            <i class="fas fa-chevron-down"></i> Detalles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topics Section -->
+    <section id="temas" class="topics">
+        <div class="container">
+            <h2 class="section-title">Temas Principales</h2>
+            <p class="section-subtitle">Todo lo que aprenderás en este curso</p>
+            
+            <div class="topics-grid">
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Arquitectura</h3>
+                    <p>Componentes maestro, nodos trabajadores y la comunicación entre ellos</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Arquitectura" data-description="Aprenderás sobre los componentes principales de Kubernetes: el Control Plane (maestro) con API Server, etcd, scheduler y controller-manager, y los Worker Nodes que ejecutan tus aplicaciones. Entenderás cómo se comunican y orquestan para mantener el estado deseado.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <h3>Pods</h3>
+                    <p>La unidad más pequeña desplegable en Kubernetes</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Pods" data-description="Los Pods son la unidad más pequeña en Kubernetes. Contienen uno o más contenedores (usualmente uno). Aprenderás a crear, actualizar y borrar Pods, entender su ciclo de vida, y cómo Kubernetes gestiona su ejecución en los nodos.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h3>Services</h3>
+                    <p>Exposición de aplicaciones y balanceo de carga</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Services" data-description="Los Services exponen tus aplicaciones y proporcionan balanceo de carga. Conocerás ClusterIP (acceso interno), NodePort (acceso externo en puertos), y LoadBalancer (acceso a través de balanceadores de carga externos). También aprenderás sobre Endpoints y Service Discovery.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Deployments</h3>
+                    <p>Gestión declarativa de aplicaciones y updates</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Deployments" data-description="Los Deployments ofrecen gestión declarativa de aplicaciones. Aprenderás sobre rolling updates, rollbacks, replicas, y cómo especificar el estado deseado de tu aplicación. También cubrimos estrategias de actualización y monitoreo de despliegues.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Storage</h3>
+                    <p>Persistent Volumes, Claims y gestión de datos</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Storage" data-description="Aprenderás a gestionar el almacenamiento persistente en Kubernetes. Cubrimos Volumes (datos temporales), PersistentVolumes (almacenamiento del cluster), PersistentVolumeClaims (solicitudes de almacenamiento), StorageClasses, y diferentes proveedores de almacenamiento.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Seguridad</h3>
+                    <p>RBAC, Network Policies y autenticación</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Seguridad" data-description="La seguridad es fundamental. Aprenderás sobre RBAC (Role-Based Access Control), Network Policies para controlar tráfico, Pod Security Policies, secretos y configuraciones sensibles, autenticación y autorización, y mejores prácticas de seguridad en Kubernetes.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Monitoreo</h3>
+                    <p>Prometheus, Grafana y observabilidad</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Monitoreo" data-description="Aprenderás a monitorear tus aplicaciones en Kubernetes. Cubrimos Prometheus para recolección de métricas, Grafana para visualización, alertas, logs, y observabilidad completa. También aprenderás a configurar health checks y liveness probes.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="topic-card">
+                    <div class="topic-icon">
+                        <i class="fas fa-anchor"></i>
+                    </div>
+                    <h3>Helm</h3>
+                    <p>Package management y despliegue automatizado</p>
+                    <a href="javascript:void(0)" class="topic-link" data-title="Helm" data-description="Helm es el package manager de Kubernetes. Aprenderás a empaquetar aplicaciones con Charts, reutilizar configuraciones, manejar variables y plantillas, y desplegar aplicaciones complejas fácilmente. Exploraremos repositorios de Helm y la comunidad.">Explorar <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Practical Examples Section -->
+    <section id="ejemplos" class="examples">
+        <div class="container">
+            <h2 class="section-title">Ejemplos Prácticos Interactivos</h2>
+            <p class="section-subtitle">Aprende con código real y casos de uso reales</p>
+
+            <div class="examples-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab(event, 'pod-basico')">Pod Básico</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'deployment')">Deployment</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'service')">Service</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'configmap')">ConfigMap</button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Pod Básico -->
+                    <div id="pod-basico" class="tab-pane active">
+                        <div class="example-description">
+                            <h3>Crear tu primer Pod</h3>
+                            <p>Un Pod es la unidad más pequeña en Kubernetes. Aquí te mostramos cómo crear uno:</p>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>pod-basico.yaml</span>
+                                <button class="btn-copy" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <pre><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: mi-primer-pod
+  labels:
+    app: mi-aplicacion
+spec:
+  containers:
+  - name: app-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+  restartPolicy: Always</code></pre>
+                        </div>
+                        <div class="example-commands">
+                            <h4>Comandos para ejecutar:</h4>
+                            <div class="command-item">
+                                <code>kubectl apply -f pod-basico.yaml</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl get pods</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl describe pod mi-primer-pod</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deployment -->
+                    <div id="deployment" class="tab-pane">
+                        <div class="example-description">
+                            <h3>Crear un Deployment</h3>
+                            <p>Los Deployments manejan replicas y actualizaciones automáticamente:</p>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>deployment.yaml</span>
+                                <button class="btn-copy" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <pre><code>apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  labels:
+    app: mi-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mi-app
+  template:
+    metadata:
+      labels:
+        app: mi-app
+    spec:
+      containers:
+      - name: app
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"
+          requests:
+            cpu: "0.25"
+            memory: "256Mi"</code></pre>
+                        </div>
+                        <div class="example-commands">
+                            <h4>Comandos para ejecutar:</h4>
+                            <div class="command-item">
+                                <code>kubectl apply -f deployment.yaml</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl rollout status deployment/app-deployment</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl scale deployment app-deployment --replicas=5</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service -->
+                    <div id="service" class="tab-pane">
+                        <div class="example-description">
+                            <h3>Exponer una Aplicación con Service</h3>
+                            <p>Los Services permiten acceder a tus aplicaciones desde dentro y fuera del cluster:</p>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>service.yaml</span>
+                                <button class="btn-copy" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <pre><code>apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: mi-app
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    nodePort: 30000</code></pre>
+                        </div>
+                        <div class="example-commands">
+                            <h4>Comandos para ejecutar:</h4>
+                            <div class="command-item">
+                                <code>kubectl apply -f service.yaml</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl get svc</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl port-forward svc/app-service 8080:80</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ConfigMap -->
+                    <div id="configmap" class="tab-pane">
+                        <div class="example-description">
+                            <h3>Gestionar Configuración con ConfigMap</h3>
+                            <p>Los ConfigMaps almacenan datos no confidenciales en pares clave-valor:</p>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <span>configmap.yaml</span>
+                                <button class="btn-copy" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <pre><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  database_host: "db.example.com"
+  database_port: "5432"
+  log_level: "INFO"
+  config.yaml: |
+    server:
+      port: 8080
+      timeout: 30
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-pod
+spec:
+  containers:
+  - name: app
+    image: myapp:latest
+    envFrom:
+    - configMapRef:
+        name: app-config</code></pre>
+                        </div>
+                        <div class="example-commands">
+                            <h4>Comandos para ejecutar:</h4>
+                            <div class="command-item">
+                                <code>kubectl apply -f configmap.yaml</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl get configmap</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <div class="command-item">
+                                <code>kubectl describe configmap app-config</code>
+                                <button class="btn-copy-small" onclick="copyCommand(this)"><i class="fas fa-copy"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Learning Section -->
+    <section class="interactive-learning">
+        <div class="container">
+            <h2 class="section-title">Centro de Recursos Interactivos</h2>
+            <p class="section-subtitle">Herramientas y recursos para optimizar tu aprendizaje</p>
+
+            <div class="resources-grid">
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Documentación Oficial</h3>
+                    <p>Acceso directo a la documentación completa de Kubernetes</p>
+                    <a href="https://kubernetes.io/docs/" target="_blank" class="resource-link">
+                        Ir a Docs <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-terminal"></i>
+                    </div>
+                    <h3>Playground Interactivo</h3>
+                    <p>Experimenta con Kubernetes sin instalación local</p>
+                    <a href="https://www.katacoda.com/courses/kubernetes" target="_blank" class="resource-link">
+                        Acceder <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>Video Tutoriales</h3>
+                    <p>Series de video paso a paso para cada tema</p>
+                    <a href="#" class="resource-link">
+                        Ver Videos <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Comunidad y Foros</h3>
+                    <p>Conecta con otros estudiantes y expertos</p>
+                    <a href="https://kubernetes.slack.com" target="_blank" class="resource-link">
+                        Unirse <i class="fas fa-external-link-alt"></i>
+                    </a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h3>Proyectos Prácticos</h3>
+                    <p>Proyectos finales para demostrar tus habilidades</p>
+                    <a href="#" class="resource-link">
+                        Ver Proyectos <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="resource-card">
+                    <div class="resource-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>Mejores Prácticas</h3>
+                    <p>Guía de mejores prácticas en producción</p>
+                    <a href="#" class="resource-link">
+                        Leer Guía <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Progress Tracker Section -->
+    <section class="progress-tracker">
+        <div class="container">
+            <h2 class="section-title">Tu Progreso de Aprendizaje</h2>
+            
+            <div class="tracker-container">
+                <div class="tracker-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">16</div>
+                        <div class="stat-label">Módulos Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">120+</div>
+                        <div class="stat-label">Horas de Contenido</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Ejercicios Prácticos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">100%</div>
+                        <div class="stat-label">Tasa de Éxito</div>
+                    </div>
+                </div>
+
+                <div class="progress-visualization">
+                    <h3>Habilidades que Adquirirás</h3>
+                    <div class="skills-progress">
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Conceptos Fundamentales</span>
+                                <span class="progress-percent">100%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Deployments y Aplicaciones</span>
+                                <span class="progress-percent">85%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Networking y Services</span>
+                                <span class="progress-percent">80%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Monitoreo y Logging</span>
+                                <span class="progress-percent">75%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Seguridad y RBAC</span>
+                                <span class="progress-percent">70%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span>Arquitectura Avanzada</span>
+                                <span class="progress-percent">60%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>¿Listo para comenzar tu viaje en Kubernetes?</h2>
+            <p>Únete a miles de profesionales que ya están aprendiendo con nosotros</p>
+            <button class="btn btn-primary btn-large" onclick="scrollToSection('contacto')">Inscribirse Ahora</button>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contacto</h2>
+            <p class="section-subtitle">¿Tienes preguntas? Nos encantaría saber de ti</p>
+
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:info@kuberclass.com">info@kuberclass.com</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Teléfono</h4>
+                            <p><a href="tel:+34900123456">+34 900 123 456</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Ubicación</h4>
+                            <p>Madrid, España</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <input type="text" placeholder="Tu nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" placeholder="Tu email" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Tu mensaje" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>KuberClass</h4>
+                    <p>Tu plataforma completa de aprendizaje en Kubernetes</p>
+                    <div class="social-links">
+                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Cursos</h4>
+                    <ul>
+                        <li><a href="#">Kubernetes Básico</a></li>
+                        <li><a href="#">DevOps Avanzado</a></li>
+                        <li><a href="#">Cloud Native</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Recursos</h4>
+                    <ul>
+                        <li><a href="#">Documentación</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Comunidad</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Privacidad</a></li>
+                        <li><a href="#">Términos</a></li>
+                        <li><a href="#">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 KuberClass. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" class="scroll-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>

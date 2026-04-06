@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presentacion - Sistema de Escalado de Incidencias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c1116;
+      --panel: #111722;
+      --muted: #9fb0c3;
+      --text: #e7edf5;
+      --accent: #4dd0e1;
+      --accent-2: #7cf29c;
+      --card: #141c29;
+      --border: #1f2a3b;
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Public Sans", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(77, 208, 225, 0.12), transparent 35%),
+                  radial-gradient(circle at 80% 0%, rgba(124, 242, 156, 0.12), transparent 30%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    .page { max-width: 1200px; margin: 0 auto; padding: 40px 20px 64px; }
+
+    header {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .badge { display: inline-block; padding: 6px 10px; border-radius: 10px; background: rgba(124, 242, 156, 0.12); border: 1px solid rgba(124, 242, 156, 0.4); color: #c7ffe0; font-weight: 600; font-size: 12px; letter-spacing: 0.3px; }
+    h1 { margin: 10px 0 12px; font-family: "Space Grotesk", system-ui, sans-serif; font-size: 32px; letter-spacing: -0.4px; }
+    .lead { margin: 0 0 14px; color: var(--muted); line-height: 1.6; }
+    .cta-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn { display: inline-flex; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border); color: var(--text); text-decoration: none; background: rgba(255,255,255,0.04); box-shadow: var(--shadow); font-weight: 700; }
+    .btn:hover { border-color: rgba(124, 242, 156, 0.6); }
+    .pill { padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(77,208,225,0.35); color: var(--muted); font-size: 12px; }
+
+    .card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+    .sub { color: var(--accent); font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; font-size: 12px; }
+
+    .flow h2 { margin: 0 0 10px; font-size: 20px; font-family: "Space Grotesk", system-ui, sans-serif; }
+    .timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
+    .stage { border: 1px dashed var(--border); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02); }
+    .stage strong { display: block; margin-bottom: 6px; }
+
+    .grid { margin-top: 18px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+
+    .deliverables { margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .tag { padding: 6px 10px; border-radius: 999px; background: rgba(124, 242, 156, 0.08); border: 1px solid rgba(124, 242, 156, 0.4); color: #b8ffd0; font-size: 12px; letter-spacing: 0.3px; }
+
+    .sim { margin-top: 36px; background: linear-gradient(135deg, rgba(77,208,225,0.08), rgba(124,242,156,0.06)); border: 1px solid rgba(77,208,225,0.35); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
+    .sim h2 { margin: 0 0 12px; font-size: 20px; font-family: "Space Grotesk", system-ui, sans-serif; }
+    .sim-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .sim-card { background: rgba(12,17,22,0.65); border: 1px solid var(--border); border-radius: 14px; padding: 14px; position: relative; overflow: hidden; }
+    .sim-card::after { content: ""; position: absolute; inset: -40%; background: conic-gradient(from 120deg, rgba(77,208,225,0.3), rgba(124,242,156,0.25), rgba(77,208,225,0.3)); filter: blur(40px); opacity: 0; transition: opacity 0.4s ease; pointer-events: none; }
+    .sim-card:hover::after { opacity: 0.8; }
+    .sim-step { display: flex; gap: 10px; align-items: flex-start; }
+    .sim-badge { width: 34px; height: 34px; border-radius: 10px; background: rgba(77,208,225,0.15); border: 1px solid rgba(77,208,225,0.4); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: var(--accent); flex-shrink: 0; box-shadow: var(--shadow); }
+    .sim-text h4 { margin: 0 0 4px; font-size: 16px; font-family: "Space Grotesk", system-ui, sans-serif; }
+    .sim-text p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 14px; }
+    .screen { margin-top: 14px; border-radius: 12px; border: 1px solid var(--border); background: #0e1620; min-height: 130px; padding: 12px; position: relative; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03); }
+    .pulse { width: 12px; height: 12px; border-radius: 50%; background: var(--accent-2); position: absolute; top: 12px; right: 12px; box-shadow: 0 0 0 0 rgba(124,242,156,0.4); animation: pulse 2.6s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(124,242,156,0.35); } 60% { box-shadow: 0 0 0 22px rgba(124,242,156,0); } 100% { box-shadow: 0 0 0 0 rgba(124,242,156,0); } }
+    .flowline { display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+    .chip { padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); font-size: 13px; text-align: center; color: var(--muted); }
+    @media (max-width: 720px) { .flowline { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); } }
+
+    /* Demo interactiva tipo n8n */
+    .demo { margin-top: 36px; background: #0e1620; border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
+    .demo h2 { margin: 0 0 12px; font-size: 20px; font-family: "Space Grotesk", system-ui, sans-serif; display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .demo button { background: linear-gradient(120deg, var(--accent), var(--accent-2)); border: none; color: #041018; font-weight: 700; padding: 8px 12px; border-radius: 10px; cursor: pointer; box-shadow: var(--shadow); }
+    .canvas { position: relative; min-height: 520px; background: #0c121b; border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden; padding: 26px 26px 18px 26px; box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+    .gridlines { position: absolute; inset: 0; background-image: linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(180deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 38px 38px; pointer-events: none; }
+    .node { position: absolute; width: 200px; min-height: 110px; background: #fdfefe; color: #0f172a; border: 1px solid #d7e0eb; border-radius: 12px; padding: 14px; box-shadow: 0 12px 32px rgba(0,0,0,0.25); display: flex; flex-direction: column; gap: 6px; }
+    .node .title { display: flex; align-items: center; gap: 8px; font-weight: 800; color: #0b1221; letter-spacing: 0.1px; }
+    .node .icon { width: 30px; height: 30px; border-radius: 10px; background: linear-gradient(140deg, #fff6e6, #ffe0b2); display: inline-flex; align-items: center; justify-content: center; font-size: 17px; color: #c05621; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+    .node.alt .icon { background: linear-gradient(140deg, #e0f7ff, #b9ecff); color: #0e7490; }
+    .node p { margin: 0; color: #334155; font-size: 13px; line-height: 1.5; }
+    .badge-mini { display: inline-block; padding: 4px 8px; background: rgba(124, 242, 156, 0.15); border: 1px solid rgba(124, 242, 156, 0.35); color: #0f5132; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; }
+    .node.ghost { opacity: 0.52; filter: saturate(0.7); }
+    .edge-svg { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .edge-path { stroke: #9fb3c8; stroke-width: 3; fill: none; stroke-linecap: round; filter: drop-shadow(0 0 4px rgba(0,0,0,0.25)); }
+    .edge-path.arrow { marker-end: url(#arrowhead); }
+    .highlight { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #22d3ee; box-shadow: 0 0 0 0 rgba(34,211,238,0.38); animation: pulse 2s infinite; opacity: 0; transition: opacity 0.2s ease, transform 0.4s ease; z-index: 3; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34,211,238,0.35); } 60% { box-shadow: 0 0 0 16px rgba(34,211,238,0); } 100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); } }
+    .legend { margin-top: 12px; color: var(--muted); font-size: 13px; line-height: 1.5; text-align: center; }
+    .diagram { margin-top: 14px; }
+    .diagram img { width: 100%; max-width: 1200px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 16px 40px rgba(0,0,0,0.35); display: block; }
+
+    .footnote { margin-top: 26px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    @media (max-width: 860px) { header { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <span class="badge">Sistema de Escalado de Incidencias · n8n</span>
+        <h1>Objetivo, Alcance y Entregables</h1>
+        <p class="lead">
+          Plataforma modular para recepcion, clasificacion, escalado y notificacion de incidencias y requerimientos. Diseñada en fases independientes para desplegar rapido, cumplir SLA y avisar por WhatsApp y Microsoft Teams.
+        </p>
+        <div class="cta-row">
+          <a class="btn" href="../README.md">Ver README</a>
+          <a class="btn" href="https://n8n.io" target="_blank" rel="noreferrer">Abrir n8n</a>
+          <span class="pill">Version 1.0.0 · Nov 2025</span>
+        </div>
+      </div>
+      <div class="card" style="min-height: 200px; background: linear-gradient(140deg, rgba(77,208,225,0.18), rgba(124,242,156,0.12)); border: 1px solid rgba(124,242,156,0.35);">
+        <div class="sub">Objetivo</div>
+        <h3>Automatizar todo el ciclo de incidencias</h3>
+        <p>Recepcion omnicanal, clasificacion inteligente, escalado por SLA y notificaciones accionables. Cada fase se puede desplegar de forma aislada.</p>
+        <div class="tag-row">
+          <span class="tag">Webhook/Form/Email</span>
+          <span class="tag">Clasificacion y SLA</span>
+          <span class="tag">Escalado N1-N3</span>
+          <span class="tag">WhatsApp/Teams</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="flow">
+      <h2>Alcance por Fase</h2>
+      <div class="timeline">
+        <div class="stage">
+          <strong>Fase 1 · Recepcion</strong>
+          Webhook, formulario y email; valida y normaliza datos.
+        </div>
+        <div class="stage">
+          <strong>Fase 2 · Clasificacion</strong>
+          Ajusta prioridad/area, enriquece y calcula SLA inicial.
+        </div>
+        <div class="stage">
+          <strong>Fase 3 · Escalado</strong>
+          Reglas por SLA; escalado automatico N1-N3 y manual.
+        </div>
+        <div class="stage">
+          <strong>Fase 4 · Notificaciones</strong>
+          Plantillas y envios por WhatsApp y Microsoft Teams.
+        </div>
+        <div class="stage">
+          <strong>Fase 5 · Seguimiento</strong>
+          Dashboards, tracking y reportes (planificado).
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="sub">Puntos clave</div>
+        <h3>Arquitectura modular</h3>
+        <p>Workflows independientes por fase; puedes importar solo lo que necesitas. Configuraciones en JSON para areas, prioridades y SLA.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Beneficio</div>
+        <h3>SLA visibles y accionables</h3>
+        <p>Alertas preventivas (60/80/90%), escalado automatico y notificaciones inmediatas a responsables.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Integracion</div>
+        <h3>Entrada flexible</h3>
+        <p>Webhook REST, formulario web y parsing de correo para captar incidencias desde cualquier canal.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Notificacion</div>
+        <h3>Accion directa</h3>
+        <p>Mensajes concisos en WhatsApp y Adaptive Cards en Teams con enlaces de accion y contexto completo.</p>
+      </div>
+    </div>
+
+    <div class="deliverables">
+      <div class="card">
+        <div class="sub">Entregables</div>
+        <h3>Workflows n8n por fase</h3>
+        <p>Importables desde la carpeta fase-1 a fase-4; cada uno activo y testeable por separado.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Entregables</div>
+        <h3>Reglas y configuracion</h3>
+        <p>JSON de areas, prioridades, SLA y reglas de escalado/clasificacion para ajustar al negocio.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Entregables</div>
+        <h3>Plantillas de mensaje</h3>
+        <p>WhatsApp y Teams listas para personalizar con branding y nivel de detalle requerido.</p>
+      </div>
+      <div class="card">
+        <div class="sub">Entregables</div>
+        <h3>Documentacion</h3>
+        <p>Instalacion, uso y pruebas guiadas en la carpeta docs para despliegue rapido.</p>
+      </div>
+    </div>
+
+    <div class="sim">
+      <h2>Simulacion visual del recorrido</h2>
+      <div class="sim-grid">
+        <div class="sim-card">
+          <div class="sim-step">
+            <div class="sim-badge">1</div>
+            <div class="sim-text">
+              <h4>Recepcion omnicanal</h4>
+              <p>Llega un POST al webhook o un email; se valida y se genera ID de incidencia.</p>
+            </div>
+          </div>
+          <div class="screen">
+            <div class="pulse"></div>
+            <div class="flowline">
+              <div class="chip">Webhook</div>
+              <div class="chip">Formulario</div>
+              <div class="chip">Email</div>
+              <div class="chip">Valida campos</div>
+              <div class="chip">ID generado</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-step">
+            <div class="sim-badge">2</div>
+            <div class="sim-text">
+              <h4>Clasificacion inteligente</h4>
+              <p>Analiza contenido, ajusta prioridad/area y calcula SLA. Detecta duplicados.</p>
+            </div>
+          </div>
+          <div class="screen">
+            <div class="pulse" style="background: var(--accent);"></div>
+            <div class="flowline">
+              <div class="chip">Keywords</div>
+              <div class="chip">Prioridad final</div>
+              <div class="chip">Area destino</div>
+              <div class="chip">SLA calculado</div>
+              <div class="chip">Duplicados?</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-step">
+            <div class="sim-badge">3</div>
+            <div class="sim-text">
+              <h4>Escalado y alertas</h4>
+              <p>Monitoreo cada 5 min: si SLA se consume, escala N1→N2→N3 y avisa.</p>
+            </div>
+          </div>
+          <div class="screen">
+            <div class="pulse" style="background: #ffca28;"></div>
+            <div class="flowline">
+              <div class="chip">60% SLA</div>
+              <div class="chip">80% SLA</div>
+              <div class="chip">Escalar a N2</div>
+              <div class="chip">N2 a N3</div>
+              <div class="chip">Historial</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-card">
+          <div class="sim-step">
+            <div class="sim-badge">4</div>
+            <div class="sim-text">
+              <h4>Notificacion accionable</h4>
+              <p>Envio de WhatsApp y tarjeta de Teams con enlaces para ver, asignar o comentar.</p>
+            </div>
+          </div>
+          <div class="screen">
+            <div class="pulse" style="background: #4dd0e1;"></div>
+            <div class="flowline">
+              <div class="chip">WhatsApp</div>
+              <div class="chip">Adaptive Card</div>
+              <div class="chip">Asignarme</div>
+              <div class="chip">Ver detalles</div>
+              <div class="chip">Confirmacion</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <h2>
+        Flujo n8n (narración)
+        <button id="audioBtn" aria-label="Reproducir narración">▶ Escuchar narración</button>
+      </h2>
+      <p class="legend">Pulsa reproducir para escuchar el recorrido completo del flujo en n8n.</p>
+      <div class="diagram">
+        <img src="n8n-flow.png" alt="Flujo n8n" />
+      </div>
+    </div>
+
+    <script>
+      const audioBtn = document.getElementById('audioBtn');
+      let utterance = null;
+
+      const narration = [
+        'Uno: el webhook recibe la incidencia vía POST y crea el contexto.',
+        'Dos: validamos campos obligatorios; si falla, respondemos error 400.',
+        'Tres: normalizamos datos, claves y formatos.',
+        'Cuatro: validamos el área de destino para enrutar.',
+        'Cinco: opcionalmente guardamos en base de datos (desactivado en la demo).',
+        'Seis: opcionalmente enviamos un correo de confirmación (desactivado en la demo).',
+        'Siete: enviamos la incidencia a la Fase 2 de clasificación y respondemos 200 OK.'
+      ].join(' ');
+
+      function speak(text) {
+        if (!('speechSynthesis' in window)) {
+          alert('Speech Synthesis no está soportado en este navegador.');
+          return null;
+        }
+        if (utterance) {
+          window.speechSynthesis.cancel();
+          utterance = null;
+        }
+        utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1;
+        utterance.pitch = 1.02;
+        audioBtn.textContent = '⏹ Detener narración';
+        utterance.onend = () => { audioBtn.textContent = '▶ Escuchar narración'; };
+        utterance.onerror = () => { audioBtn.textContent = '▶ Escuchar narración'; };
+        window.speechSynthesis.speak(utterance);
+        return utterance;
+      }
+
+      audioBtn.addEventListener('click', () => {
+        if (utterance && window.speechSynthesis.speaking) {
+          window.speechSynthesis.cancel();
+          audioBtn.textContent = '▶ Escuchar narración';
+          return;
+        }
+        speak(narration);
+      });
+    </script>
+
+    <div class="footnote">
+      Nota: Esta pagina es solo visual. Los workflows y configuraciones siguen en sus rutas originales dentro del proyecto.
+    </div>
+  </div>
+</body>
+</html>

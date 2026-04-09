@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Servicios Hosting y Bases de Datos</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+            background: var(--gradient);
+            border-radius: 0 0 2rem 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-warning {
+            background: var(--warning);
+            color: black;
+        }
+
+        .badge-info {
+            background: var(--accent);
+            color: white;
+        }
+
+        .price {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .recommendation {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .comparison-table {
+                font-size: 0.875rem;
+            }
+            
+            .comparison-table th,
+            .comparison-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tool-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tool-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tool-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .cat-automation { background: #8b5cf6; color: white; }
+        .cat-monitoring { background: #ef4444; color: white; }
+        .cat-communication { background: #10b981; color: white; }
+        .cat-productivity { background: #f59e0b; color: white; }
+        .cat-security { background: #ec4899; color: white; }
+        .cat-analytics { background: #06b6d4; color: white; }
+
+        .tool-url {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .tool-url:hover {
+            text-decoration: underline;
+        }
+
+        .advantages-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .advantage-tag {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .deploy-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .deploy-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--text);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tools-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bar" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.2rem; font-weight: bold; color: #fff;">🚀 Mi Espacio Digital</div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="index.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏠 Inicio</a>
+                <a href="servicios-hosting-db.html" style="color: #fff; background: rgba(255,255,255,0.1); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">📊 Hosting y BD</a>
+                <a href="arquitecturas-saas.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏗️ Arquitecturas</a>
+                <a href="manual-n8n-render.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🔧 Manual n8n</a>
+                <a href="aulavirtual.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🎓 Aula Virtual</a>
+                <a href="chatIA.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🤖 Chat IA</a>
+            </div>
+        </div>
+    </nav>
+    
+    <header>
+        <div class="container">
+            <h1>Análisis de Servicios Hosting y Bases de Datos</h1>
+            <p class="subtitle">Guía completa para tu negocio de SaaS, automatización y sitios web</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Introducción -->
+        <div class="section">
+            <div class="card">
+                <h2>🚀 Objetivo del Análisis</h2>
+                <p>Este análisis exhaustivo evalúa los mejores servicios de hosting y bases de datos para un negocio que ofrece:</p>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>Servicios SaaS</strong><br>
+                        Aplicaciones web escalables
+                    </div>
+                    <div class="feature-item">
+                        <strong>Automatizaci��n</strong><br>
+                        n8n, Python, workflows
+                    </div>
+                    <div class="feature-item">
+                        <strong>Sitios Web</strong><br>
+                        Presencia digital profesional
+                    </div>
+                </div>
+                <p><strong>Criterios evaluados:</strong> Bajo costo, alto rendimiento, administrabilidad, escalabilidad y planes gratuitos.</p>
+            </div>
+        </div>
+
+        <!-- Servicios de Hosting -->
+        <div class="section">
+            <h2 class="section-title">🌐 Top 5 Servicios de Hosting</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>URL</th>
+                        <th>Plan Gratuito</th>
+                        <th>Plan Básico</th>
+                        <th>Rendimiento</th>
+                        <th>Escalabilidad</th>
+                        <th>Recomendación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Vercel</strong></td>
+                        <td><a href="https://vercel.com" target="_blank" style="color: var(--accent);">vercel.com</a></td>
+                        <td class="highlight">Sí (Hobby)</td>
+                        <td class="price">$20/mes</td>
+                        <td><span class="badge badge-success">Excelente</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Ideal para frontend y sitios estáticos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Netlify</strong></td>
+                        <td><a href="https://netlify.com" target="_blank" style="color: var(--accent);">netlify.com</a></td>
+                        <td class="highlight">Sí (Starter)</td>
+                        <td class="price">$19/mes</td>
+                        <td><span class="badge badge-success">Excelente</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Perfecto para JAMstack y funciones serverless</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Railway</strong></td>
+                        <td><a href="https://railway.app" target="_blank" style="color: var(--accent);">railway.app</a></td>
+                        <td class="highlight">Sí ($5 crédito)</td>
+                        <td class="price">Pago por uso</td>
+                        <td><span class="badge badge-success">Muy Bueno</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Excelente para aplicaciones full-stack</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Render</strong></td>
+                        <td><a href="https://render.com" target="_blank" style="color: var(--accent);">render.com</a></td>
+                        <td class="highlight">Sí (Free tier)</td>
+                        <td class="price">$7/mes</td>
+                        <td><span class="badge badge-info">Bueno</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Balance perfecto costo-rendimiento</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DigitalOcean App Platform</strong></td>
+                        <td><a href="https://www.digitalocean.com/products/app-platform" target="_blank" style="color: var(--accent);">digitalocean.com</a></td>
+                        <td class="highlight">Sí ($100 crédito)</td>
+                        <td class="price">$5/mes</td>
+                        <td><span class="badge badge-info">Bueno</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Robusto para aplicaciones empresariales</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="recommendation">
+                <h3>🎯 Recomendación para Hosting</h3>
+                <p><strong>Render</strong> ofrece el mejor balance para tu negocio: plan gratuito generoso, escalabilidad automática, y precios muy competitivos desde $7/mes. Ideal para SaaS, n8n, y sitios web.</p>
+            </div>
+        </div>
+
+        <!-- Servicios de Bases de Datos -->
+        <div class="section">
+            <h2 class="section-title">🗄️ Top 5 Servicios de PostgreSQL</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>URL</th>
+                        <th>Plan Gratuito</th>
+                        <th>Plan Básico</th>
+                        <th>Rendimiento</th>
+                        <th>Escalabilidad</th>
+                        <th>Recomendación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Supabase</strong></td>
+                        <td><a href="https://supabase.com" target="_blank" style="color: var(--accent);">supabase.com</a></td>
+                        <td class="highlight">Sí (Free tier)</td>
+                        <td class="price">$25/mes</td>
+                        <td><span class="badge badge-success">Excelente</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>PostgreSQL + herramientas de desarrollo</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Neon</strong></td>
+                        <td><a href="https://neon.tech" target="_blank" style="color: var(--accent);">neon.tech</a></td>
+                        <td class="highlight">Sí (Free tier)</td>
+                        <td class="price">Pago por uso</td>
+                        <td><span class="badge badge-success">Excelente</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>PostgreSQL serverless con branching</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Railway PostgreSQL</strong></td>
+                        <td><a href="https://railway.app" target="_blank" style="color: var(--accent);">railway.app</a></td>
+                        <td class="highlight">Sí ($5 crédito)</td>
+                        <td class="price">$7/mes</td>
+                        <td><span class="badge badge-info">Bueno</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Integración perfecta con Railway hosting</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DigitalOcean Managed DB</strong></td>
+                        <td><a href="https://www.digitalocean.com/products/managed-databases" target="_blank" style="color: var(--accent);">digitalocean.com</a></td>
+                        <td>No</td>
+                        <td class="price">$15/mes</td>
+                        <td><span class="badge badge-info">Bueno</span></td>
+                        <td><span class="badge badge-success">Manual scale</span></td>
+                        <td>Estable y confiable para producción</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Amazon RDS</strong></td>
+                        <td><a href="https://aws.amazon.com/rds" target="_blank" style="color: var(--accent);">aws.amazon.com/rds</a></td>
+                        <td class="highlight">Sí (12 meses free)</td>
+                        <td class="price">$12/mes</td>
+                        <td><span class="badge badge-success">Excelente</span></td>
+                        <td><span class="badge badge-success">Auto-scale</span></td>
+                        <td>Enterprise-grade con alta disponibilidad</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="recommendation">
+                <h3>🎯 Recomendación para Bases de Datos</h3>
+                <p><strong>Supabase</strong> es la mejor opción: PostgreSQL real con plan gratuito generoso, auto-escalado, y herramientas de desarrollo incluidas. Perfecto para aplicaciones SaaS.</p>
+            </div>
+        </div>
+
+        <!-- Estrategia de Negocio -->
+        <div class="section">
+            <h2 class="section-title">💼 Estrategia Recomendada</h2>
+            
+            <div class="card">
+                <h3>Arquitectura Propuesta</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>Hosting Principal</strong><br>
+                        Render ($7/mes)
+                        <ul>
+                            <li>Sitios web estáticos</li>
+                            <li>Aplicaciones n8n</li>
+                            <li>Scripts Python</li>
+                        </ul>
+                    </div>
+                    <div class="feature-item">
+                        <strong>Base de Datos</strong><br>
+                        Supabase (Gratuito → $25/mes)
+                        <ul>
+                            <li>Datos de clientes</li>
+                            <li>Logs de automatización</li>
+                            <li>Configuraciones SaaS</li>
+                        </ul>
+                    </div>
+                    <div class="feature-item">
+                        <strong>Backup Strategy</strong><br>
+                        Multi-nube
+                        <ul>
+                            <li>Render + Vercel gratis</li>
+                            <li>Supabase backups automáticos</li>
+                            <li>CDN global incluido</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>💰 Estimación de Costos Iniciales</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Costo Mensual</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Render Hosting</td>
+                            <td class="price">$7</td>
+                            <td>Plan básico escalable</td>
+                        </tr>
+                        <tr>
+                            <td>Supabase Database</td>
+                            <td class="price">$0</td>
+                            <td>Gratuito hasta 2 proyectos</td>
+                        </tr>
+                        <tr>
+                            <td>Dominio personalizado</td>
+                            <td class="price">$12/año</td>
+                            <td>≈ $1/mes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Estimado</strong></td>
+                            <td class="price"><strong>$8/mes</strong></td>
+                            <td>Para empezar</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>🚀 Plan de Escalamiento</h3>
+                <ol>
+                    <li><strong>Fase 1 (0-3 meses):</strong> Utilizar planes gratuitos de Render y Supabase</li>
+                    <li><strong>Fase 2 (3-6 meses):</strong> Upgrade a plan básico de Render ($7/mes)</li>
+                    <li><strong>Fase 3 (6+ meses):</strong> Upgrade a Supabase Pro ($25/mes) cuando sea necesario</li>
+                    <li><strong>Fase Enterprise:</strong> Considerar DigitalOcean para mayor control</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Catálogo de Herramientas Open Source -->
+        <div class="section">
+            <h2 class="section-title">🛠️ Catálogo de Herramientas Open Source para SaaS</h2>
+            
+            <div class="card">
+                <p style="margin-bottom: 1.5rem;">Herramientas open source que puedes desplegar y ofrecer como servicios SaaS. Cada una incluye ventajas, URL oficial y comandos de despliegue.</p>
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterTools('all')">Todas</button>
+                    <button class="filter-btn" onclick="filterTools('automation')">Automatización</button>
+                    <button class="filter-btn" onclick="filterTools('monitoring')">Monitoreo</button>
+                    <button class="filter-btn" onclick="filterTools('communication')">Comunicación</button>
+                    <button class="filter-btn" onclick="filterTools('productivity')">Productividad</button>
+                    <button class="filter-btn" onclick="filterTools('security')">Seguridad</button>
+                    <button class="filter-btn" onclick="filterTools('analytics')">Analytics</button>
+                </div>
+
+                <div class="tools-grid">
+                    <!-- n8n -->
+                    <div class="tool-card" data-category="automation">
+                        <div class="tool-header">
+                            <span class="tool-title">🔄 n8n</span>
+                            <span class="tool-category cat-automation">Automatización</span>
+                        </div>
+                        <p>Plataforma de automatización de workflows con interfaz visual. Conecta APIs, servicios y bases de datos sin código.</p>
+                        <a href="https://n8n.io" target="_blank" class="tool-url">🔗 n8n.io</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Código abierto</span>
+                            <span class="advantage-tag">✓ Self-hosted</span>
+                            <span class="advantage-tag">✓ 400+ integraciones</span>
+                            <span class="advantage-tag">✓ Sin límites de ejecuciones</span>
+                            <span class="advantage-tag">✓ Interfaz visual</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -it --rm \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  n8nio/n8n
+
+# Docker Compose
+version: '3.8'
+services:
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password
+
+# Render.com
+# Crear servicio web con imagen Docker n8nio/n8n
+# Puerto: 5678</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grafana -->
+                    <div class="tool-card" data-category="monitoring">
+                        <div class="tool-header">
+                            <span class="tool-title">📊 Grafana</span>
+                            <span class="tool-category cat-monitoring">Monitoreo</span>
+                        </div>
+                        <p>Plataforma de visualización y análisis de métricas. Dashboards interactivos para monitoreo de infraestructura.</p>
+                        <a href="https://grafana.com" target="_blank" class="tool-url">🔗 grafana.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Visualización avanzada</span>
+                            <span class="advantage-tag">✓ Múltiples fuentes de datos</span>
+                            <span class="advantage-tag">✓ Alertas configurables</span>
+                            <span class="advantage-tag">✓ Comunidad activa</span>
+                            <span class="advantage-tag">✓ Plugins extensibles</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d -p 3000:3000 grafana/grafana
+
+# Docker Compose
+version: '3.8'
+services:
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+# Helm (Kubernetes)
+helm repo add grafana https://grafana.github.io/helm-charts
+helm install grafana grafana/grafana</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Wazuh -->
+                    <div class="tool-card" data-category="security">
+                        <div class="tool-header">
+                            <span class="tool-title">🛡️ Wazuh</span>
+                            <span class="tool-category cat-security">Seguridad</span>
+                        </div>
+                        <p>Plataforma de seguridad open source para detección de amenazas, monitoreo de integridad y respuesta a incidentes.</p>
+                        <a href="https://wazuh.com" target="_blank" class="tool-url">🔗 wazuh.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ SIEM completo</span>
+                            <span class="advantage-tag">✓ Detección de intrusiones</span>
+                            <span class="advantage-tag">✓ Cumplimiento normativo</span>
+                            <span class="advantage-tag">✓ Análisis de logs</span>
+                            <span class="advantage-tag">✓ Respuesta automática</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker Compose (Wazuh completo)
+version: '3.8'
+services:
+  wazuh:
+    image: wazuh/wazuh-manager
+    ports:
+      - "1514:1514"
+      - "1515:1515"
+      - "514:514/udp"
+      - "55000:55000"
+    volumes:
+      - wazuh_data:/var/ossec
+
+  wazuh-dashboard:
+    image: wazuh/wazuh-dashboard
+    ports:
+      - "443:5601"
+    depends_on:
+      - wazuh
+
+# Instalación directa
+curl -sO https://packages.wazuh.com/4.7/wazuh-install.sh
+bash wazuh-install.sh</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jitsi Meet -->
+                    <div class="tool-card" data-category="communication">
+                        <div class="tool-header">
+                            <span class="tool-title">📹 Jitsi Meet</span>
+                            <span class="tool-category cat-communication">Comunicación</span>
+                        </div>
+                        <p>Plataforma de videoconferencia open source. Alternativa a Zoom con encriptación de extremo a extremo.</p>
+                        <a href="https://jitsi.org" target="_blank" class="tool-url">🔗 jitsi.org</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Video HD</span>
+                            <span class="advantage-tag">✓ Sin límite de participantes</span>
+                            <span class="advantage-tag">✓ Encriptación E2E</span>
+                            <span class="advantage-tag">✓ Grabación en la nube</span>
+                            <span class="advantage-tag">✓ Compartir pantalla</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d -p 8443:443 \
+  -e PUBLIC_URL=https://tu-dominio.com \
+  jitsi/docker-jitsi-meet
+
+# Docker Compose (recomendado)
+git clone https://github.com/jitsi/docker-jitsi-meet
+cd docker-jitsi-meet
+cp env.example .env
+# Editar .env con tu dominio
+docker-compose up -d
+
+# Helm (Kubernetes)
+helm repo add jitsi https://jitsi.github.io/helm-charts
+helm install jitsi jitsi/jitsi-meet</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mattermost -->
+                    <div class="tool-card" data-category="communication">
+                        <div class="tool-header">
+                            <span class="tool-title">💬 Mattermost</span>
+                            <span class="tool-category cat-communication">Comunicación</span>
+                        </div>
+                        <p>Plataforma de mensajería empresarial open source. Alternativa a Slack con control total de datos.</p>
+                        <a href="https://mattermost.com" target="_blank" class="tool-url">🔗 mattermost.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Mensajería segura</span>
+                            <span class="advantage-tag">✓ Canales organizados</span>
+                            <span class="advantage-tag">✓ Integraciones DevOps</span>
+                            <span class="advantage-tag">✓ Búsqueda avanzada</span>
+                            <span class="advantage-tag">✓ Self-hosted</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run --name mattermost \
+  -d --publish 8065:8065 \
+  --add-host dockerhost:127.0.0.1 \
+  mattermost/mattermost-preview
+
+# Docker Compose (producción)
+git clone https://github.com/mattermost/docker
+cd docker
+cp .env.example .env
+# Configurar .env
+docker-compose up -d
+
+# Helm (Kubernetes)
+helm repo add mattermost https://helm.mattermost.com
+helm install mattermost mattermost/mattermost-team-edition</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Jira Open Source Alternative - Plane -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">📋 Plane</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>Alternativa open source a Jira para gestión de proyectos. Issues, sprints, y roadmaps en una sola plataforma.</p>
+                        <a href="https://plane.so" target="_blank" class="tool-url">🔗 plane.so</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Gestión ágil</span>
+                            <span class="advantage-tag">✓ Kanban y Sprints</span>
+                            <span class="advantage-tag">✓ Roadmaps visuales</span>
+                            <span class="advantage-tag">✓ API REST</span>
+                            <span class="advantage-tag">✓ Integraciones</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker Compose
+git clone https://github.com/makeplane/plane.git
+cd plane
+docker-compose up -d
+
+# Variables de entorno necesarias
+WEB_URL=https://tu-dominio.com
+CORS_ALLOWED_ORIGINS=https://tu-dominio.com
+DATABASE_URL=postgres://user:pass@db:5432/plane
+REDIS_URL=redis://redis:6379/</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Listmonk -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">📧 Listmonk</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>Plataforma de email marketing open source. Newsletters, campañas y automatización de correos.</p>
+                        <a href="https://listmonk.app" target="_blank" class="tool-url">🔗 listmonk.app</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Newsletters</span>
+                            <span class="advantage-tag">✓ Campañas masivas</span>
+                            <span class="advantage-tag">✓ Segmentación</span>
+                            <span class="advantage-tag">✓ Analytics integrado</span>
+                            <span class="advantage-tag">✓ Self-hosted</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d --name listmonk \
+  -p 9000:9000 \
+  -v /path/to/config.toml:/listmonk/config.toml \
+  listmonk/listmonk
+
+# Docker Compose
+version: '3.8'
+services:
+  listmonk:
+    image: listmonk/listmonk
+    ports:
+      - "9000:9000"
+    environment:
+      - TZ=UTC
+    volumes:
+      - ./config.toml:/listmonk/config.toml
+
+# Inicializar base de datos
+docker run --rm listmonk/listmonk ./listmonk --install</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metabase -->
+                    <div class="tool-card" data-category="analytics">
+                        <div class="tool-header">
+                            <span class="tool-title">📈 Metabase</span>
+                            <span class="tool-category cat-analytics">Analytics</span>
+                        </div>
+                        <p>Herramienta de BI open source para visualización de datos. Consultas SQL y dashboards sin código.</p>
+                        <a href="https://metabase.com" target="_blank" class="tool-url">🔗 metabase.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Visualización sin código</span>
+                            <span class="advantage-tag">✓ SQL avanzado</span>
+                            <span class="advantage-tag">✓ Dashboards interactivos</span>
+                            <span class="advantage-tag">✓ Alertas automáticas</span>
+                            <span class="advantage-tag">✓ Embedding</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d -p 3000:3000 \
+  -e MB_DB_TYPE=postgres \
+  -e MB_DB_DBNAME=metabase \
+  -e MB_DB_PORT=5432 \
+  -e MB_DB_USER=admin \
+  -e MB_DB_PASS=password \
+  -e MB_DB_HOST=db \
+  --name metabase metabase/metabase
+
+# Docker Compose
+version: '3.8'
+services:
+  metabase:
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase_data:/metabase-data</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appsmith -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">🎨 Appsmith</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>Plataforma low-code para construir aplicaciones internas. Conecta bases de datos y APIs visualmente.</p>
+                        <a href="https://appsmith.com" target="_blank" class="tool-url">🔗 appsmith.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Low-code visual</span>
+                            <span class="advantage-tag">✓ 50+ integraciones</span>
+                            <span class="advantage-tag">✓ JavaScript personalizado</span>
+                            <span class="advantage-tag">✓ Self-hosted</span>
+                            <span class="advantage-tag">✓ Control de versiones</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d --name appsmith \
+  -p 80:80 \
+  -p 443:443 \
+  -v /appsmith-stacks:/appsmith-stacks \
+  appsmith/appsmith-ce
+
+# Docker Compose
+curl -o docker-compose.yml https://raw.githubusercontent.com/appsmith/appsmith/master/deploy/docker/docker-compose.yml
+docker-compose up -d
+
+# Kubernetes
+kubectl apply -f https://raw.githubusercontent.com/appsmith/appsmith/master/deploy/k8s/appsmith.yaml</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Uptime Kuma -->
+                    <div class="tool-card" data-category="monitoring">
+                        <div class="tool-header">
+                            <span class="tool-title">⏱️ Uptime Kuma</span>
+                            <span class="tool-category cat-monitoring">Monitoreo</span>
+                        </div>
+                        <p>Monitor de uptime autoalojado. Alternativa a Uptime Robot con interfaz moderna y notificaciones.</p>
+                        <a href="https://uptime.kuma.pet" target="_blank" class="tool-url">🔗 uptime.kuma.pet</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Monitoreo HTTP/TCP</span>
+                            <span class="advantage-tag">✓ Notificaciones múltiples</span>
+                            <span class="advantage-tag">✓ Status pages</span>
+                            <span class="advantage-tag">✓ Certificados SSL</span>
+                            <span class="advantage-tag">✓ Interfaz moderna</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d --restart=always -p 3001:3001 \
+  -v uptime-kuma:/app/data \
+  --name uptime-kuma \
+  louislam/uptime-kuma:1
+
+# Docker Compose
+version: '3.8'
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma:/app/data
+    restart: always
+
+# Render.com
+# Usar imagen Docker louislam/uptime-kuma:1
+# Puerto: 3001</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plausible -->
+                    <div class="tool-card" data-category="analytics">
+                        <div class="tool-header">
+                            <span class="tool-title">📊 Plausible</span>
+                            <span class="tool-category cat-analytics">Analytics</span>
+                        </div>
+                        <p>Analytics web simple y ligero. Alternativa a Google Analytics con privacidad por defecto.</p>
+                        <a href="https://plausible.io" target="_blank" class="tool-url">🔗 plausible.io</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Sin cookies</span>
+                            <span class="advantage-tag">✓ GDPR compliant</span>
+                            <span class="advantage-tag">✓ Script ligero (<1KB)</span>
+                            <span class="advantage-tag">✓ Dashboard simple</span>
+                            <span class="advantage-tag">✓ Self-hosted</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker Compose
+git clone https://github.com/plausible/hosting
+cd hosting
+# Editar plausible-conf.env
+docker-compose up -d
+
+# Variables requeridas
+BASE_URL=https://tu-dominio.com
+SECRET_KEY_BASE=generar-clave-secreta
+DATABASE_URL=postgres://user:pass@db:5432/plausible
+MAILER_EMAIL=analytics@tu-dominio.com</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Odoo -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">🏢 Odoo</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>ERP completo open source. CRM, ventas, inventario, contabilidad y más en una sola plataforma.</p>
+                        <a href="https://odoo.com" target="_blank" class="tool-url">🔗 odoo.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ ERP completo</span>
+                            <span class="advantage-tag">✓ CRM integrado</span>
+                            <span class="advantage-tag">✓ E-commerce</span>
+                            <span class="advantage-tag">✓ Contabilidad</span>
+                            <span class="advantage-tag">✓ Modular</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d -e HOST=db -p 8069:8069 \
+  --name odoo odoo
+
+# Docker Compose (con PostgreSQL)
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=postgres
+    volumes:
+      - odoo_db:/var/lib/postgresql/data
+
+  odoo:
+    image: odoo
+    ports:
+      - "8069:8069"
+    volumes:
+      - odoo_data:/var/lib/odoo
+    depends_on:
+      - db</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nextcloud -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">☁️ Nextcloud</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>Plataforma de colaboración y almacenamiento en la nube. Alternativa a Google Drive y Dropbox.</p>
+                        <a href="https://nextcloud.com" target="_blank" class="tool-url">🔗 nextcloud.com</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Almacenamiento en nube</span>
+                            <span class="advantage-tag">✓ Colaboración docs</span>
+                            <span class="advantage-tag">✓ Calendario y contactos</span>
+                            <span class="advantage-tag">✓ E2E encryption</span>
+                            <span class="advantage-tag">✓ Apps extensibles</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d -p 8080:80 \
+  -v nextcloud:/var/www/html \
+  --name nextcloud nextcloud
+
+# Docker Compose (con MariaDB)
+version: '3.8'
+services:
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=nextcloud
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=nextcloud
+    volumes:
+      - db_data:/var/lib/mysql
+
+  nextcloud:
+    image: nextcloud
+    ports:
+      - "8080:80"
+    volumes:
+      - nextcloud_data:/var/www/html
+    depends_on:
+      - db</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vaultwarden -->
+                    <div class="tool-card" data-category="security">
+                        <div class="tool-header">
+                            <span class="tool-title">🔐 Vaultwarden</span>
+                            <span class="tool-category cat-security">Seguridad</span>
+                        </div>
+                        <p>Gestor de contraseñas compatible con Bitwarden. Alternativa ligera y self-hosted.</p>
+                        <a href="https://github.com/dani-garcia/vaultwarden" target="_blank" class="tool-url">🔗 github.com/dani-garcia/vaultwarden</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Compatible Bitwarden</span>
+                            <span class="advantage-tag">✓ Ligero (<10MB)</span>
+                            <span class="advantage-tag">✓ 2FA integrado</span>
+                            <span class="advantage-tag">✓ Secure sharing</span>
+                            <span class="advantage-tag">✓ Multi-plataforma</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d --name vaultwarden \
+  -p 8080:80 \
+  -v vaultwarden_data:/data \
+  vaultwarden/server
+
+# Docker Compose
+version: '3.8'
+services:
+  vaultwarden:
+    image: vaultwarden/server
+    ports:
+      - "8080:80"
+    volumes:
+      - vaultwarden_data:/data
+    environment:
+      - ADMIN_TOKEN=tu-token-secreto
+      - SIGNUPS_ALLOWED=true
+
+# Render.com
+# Imagen: vaultwarden/server
+# Puerto: 80</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gitea -->
+                    <div class="tool-card" data-category="productivity">
+                        <div class="tool-header">
+                            <span class="tool-title">🔧 Gitea</span>
+                            <span class="tool-category cat-productivity">Productividad</span>
+                        </div>
+                        <p>Servidor Git self-hosted ligero. Alternativa a GitHub para repositorios privados.</p>
+                        <a href="https://gitea.io" target="_blank" class="tool-url">🔗 gitea.io</a>
+                        <div class="advantages-list">
+                            <span class="advantage-tag">✓ Git hosting</span>
+                            <span class="advantage-tag">✓ CI/CD integrado</span>
+                            <span class="advantage-tag">✓ Issue tracking</span>
+                            <span class="advantage-tag">✓ Wiki integrada</span>
+                            <span class="advantage-tag">✓ Muy ligero</span>
+                        </div>
+                        <div class="deploy-section">
+                            <div class="deploy-title">📦 Comandos de Despliegue</div>
+                            <div class="code-block">
+<code># Docker
+docker run -d --name gitea \
+  -p 3000:3000 -p 222:22 \
+  -v gitea_data:/data \
+  gitea/gitea
+
+# Docker Compose (con PostgreSQL)
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    volumes:
+      - gitea_db:/var/lib/postgresql/data
+
+  gitea:
+    image: gitea/gitea
+    ports:
+      - "3000:3000"
+      - "222:22"
+    volumes:
+      - gitea_data:/data
+    depends_on:
+      - db</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recommendation">
+                <h3>💡 Ventajas de Ofrecer Servicios Open Source como SaaS</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>💰 Bajo Costo</strong><br>
+                        Sin licencias costosas, solo pagas por infraestructura
+                    </div>
+                    <div class="feature-item">
+                        <strong>🔒 Control Total</strong><br>
+                        Datos de clientes en tu infraestructura
+                    </div>
+                    <div class="feature-item">
+                        <strong>🎨 Personalización</strong><br>
+                        Adapta las herramientas a necesidades específicas
+                    </div>
+                    <div class="feature-item">
+                        <strong>📈 Escalabilidad</strong><br>
+                        Crece sin límites de licencias
+                    </div>
+                    <div class="feature-item">
+                        <strong>🤝 Comunidad</strong><br>
+                        Soporte activo y actualizaciones constantes
+                    </div>
+                    <div class="feature-item">
+                        <strong>🏆 Diferenciación</strong><br>
+                        Ofrece alternativas a servicios comerciales
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arquitecturas SaaS Profesionales -->
+        <div class="section">
+            <h2 class="section-title">🏗️ Arquitecturas SaaS Profesionales</h2>
+            
+            <div class="card">
+                <p style="margin-bottom: 1.5rem;">Modelos de arquitectura recomendados para diferentes etapas de tu negocio SaaS. Cada arquitectura está diseñada para escalar gradualmente según tus necesidades.</p>
+                
+                <div class="architecture-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                    <!-- Arquitectura 1: Básica -->
+                    <div class="arch-card" style="background: var(--card-bg); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <h4 style="color: var(--success); margin-bottom: 1rem;">📐 Arquitectura Básica (Inicio)</h4>
+                        <div style="background: #0d1117; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.75rem; color: var(--accent); overflow-x: auto; margin: 1rem 0;">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)          │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     RENDER (Hosting Gratuito)        │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐ │
+│  │  n8n    │  │  Web    │  │ API  │ │
+│  │ (Free)  │  │ Static  │  │Node  │ │
+│  └────┬────┘  └────┬────┘  └──┬───┘ │
+└───────┼────────────┼──────────┼─────┘
+        │            │          │
+┌───────▼────────────▼──────────▼─────┐
+│    SUPABASE (PostgreSQL Free)       │
+│    • Base de datos                  │
+│    • Autenticación                  │
+│    • Storage                        │
+└─────────────────────────────────────┘</pre>
+                        </div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Costo: $0-8/mes</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Ideal para empezar</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Escalable gradualmente</li>
+                            <li style="padding: 0.5rem 0;">✅ Sin compromiso</li>
+                        </ul>
+                    </div>
+
+                    <!-- Arquitectura 2: Producción -->
+                    <div class="arch-card" style="background: var(--card-bg); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <h4 style="color: var(--accent); margin-bottom: 1rem;">📈 Arquitectura Producción</h4>
+                        <div style="background: #0d1117; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.75rem; color: var(--accent); overflow-x: auto; margin: 1rem 0;">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)          │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     RENDER (Starter $7/mes)          │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐ │
+│  │  n8n    │  │  Web    │  │ API  │ │
+│  │Always On│  │  SSR    │  │Fast  │ │
+│  └────┬────┘  └────┬────┘  └──┬───┘ │
+│       │            │          │      │
+│       └────────────┼──────────┘      │
+└────────────────────┼─────────────────┘
+                     │
+┌────────────────────▼─────────────────┐
+│    SUPABASE PRO ($25/mes)            │
+│    • 8GB Base de datos                │
+│    • Auth + RLS                       │
+│    • Edge Functions                   │
+└─────────────────────────────────────┘</pre>
+                        </div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Costo: $32/mes</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Siempre activo</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Mejor rendimiento</li>
+                            <li style="padding: 0.5rem 0;">✅ Dominio personalizado</li>
+                        </ul>
+                    </div>
+
+                    <!-- Arquitectura 3: Multi-Servicio -->
+                    <div class="arch-card" style="background: var(--card-bg); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <h4 style="color: var(--warning); margin-bottom: 1rem;">🏢 Arquitectura Multi-Servicio</h4>
+                        <div style="background: #0d1117; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.75rem; color: var(--accent); overflow-x: auto; margin: 1rem 0;">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)           │
+└─────────────────┬───────────────────┘
+                  │
+┌��────────────────▼───────────────────┐
+│     RENDER (Multiple Services)       │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐│
+│  │  n8n    │  │ Grafana │  │ API  ││
+│  │ (Starter)│  │(Free)   │  │(Std) ││
+│  └────┬────┘  └────┬────┘  └──┬───┘│
+│       │            │          │     │
+│  ┌────▼────┐  ┌────▼────┐    │     │
+│  │ Uptime  │  │Metabase │    │     │
+│  │  Kuma   │  │ (Free)  │    │     │
+│  └─────────┘  └─────────┘    │     │
+└───────────────────────────────┼─────┘
+                                │
+┌───────────────────────────────▼─────┐
+│    SUPABASE + REDIS                 │
+│    • PostgreSQL                      │
+│    • Redis Cache                     │
+│    • Storage                         │
+└──────────────────────────────────���──┘</pre>
+                        </div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Costo: $50-100/mes</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Múltiples servicios</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Monitoreo integrado</li>
+                            <li style="padding: 0.5rem 0;">✅ Analytics incluido</li>
+                        </ul>
+                    </div>
+
+                    <!-- Arquitectura 4: Enterprise -->
+                    <div class="arch-card" style="background: var(--card-bg); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <h4 style="color: var(--secondary); margin-bottom: 1rem;">🌐 Arquitectura Enterprise</h4>
+                        <div style="background: #0d1117; border-radius: 8px; padding: 1rem; font-family: monospace; font-size: 0.75rem; color: var(--accent); overflow-x: auto; margin: 1rem 0;">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (CDN Global)        │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     MULTI-PROVIDER                   │
+│  ┌─────────┐  ┌─────────┐           │
+│  │ Vercel  │  │ Render  │           │
+│  │(Front)  │  │(Backend)│           │
+│  └────┬────┘  └────┬────┘           │
+│       │            │                 │
+│  ┌────▼────────────▼────┐           │
+│  │   Load Balancer      │           │
+│  └──────────────────────┘           │
+└─────────────────────────────────────┘
+        │              │
+┌───────▼──────┐  ┌────▼───────────────┐
+│  SUPABASE    │  │   Railway          │
+│  (Primary)   │  │   (Redis/Queue)    │
+└──────────────┘  └────────────────────┘</pre>
+                        </div>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Costo: $100-300/mes</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ Alta disponibilidad</li>
+                            <li style="padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">✅ CDN global</li>
+                            <li style="padding: 0.5rem 0;">✅ Escalabilidad máxima</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recomendación de Arquitectura -->
+            <div class="recommendation" style="margin-top: 2rem;">
+                <h3>🎯 ¿Qué Arquitectura Elegir?</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                        <strong>🚀 Empezando</strong>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Arquitectura Básica. Costo mínimo, ideal para validar tu idea.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                        <strong>📈 Primeros Clientes</strong>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Arquitectura Producción. Mejor rendimiento y disponibilidad.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                        <strong>🏢 Múltiples Servicios</strong>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Arquitectura Multi-Servicio. Ofrecer varios SaaS simultáneamente.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                        <strong>🌐 Escala Empresarial</strong>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Arquitectura Enterprise. Máxima disponibilidad y rendimiento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusión -->
+        <div class="section">
+            <div class="card" style="background: linear-gradient(135deg, var(--success), var(--primary)); color: white;">
+                <h2>✅ Conclusión Final</h2>
+                <p>Para tu negocio de servicios SaaS, automatización con n8n/Python, y sitios web, la combinación <strong>Render + Supabase</strong> ofrece:</p>
+                <ul>
+                    <li>✅ Costo inicial mínimo ($8/mes)</li>
+                    <li>✅ Escalabilidad automática</li>
+                    <li>✅ Alto rendimiento garantizado</li>
+                    <li>✅ Planes gratuitos para empezar</li>
+                    <li>✅ Facilidad de administración</li>
+                    <li>✅ Soporte para tecnologías modernas</li>
+                </ul>
+                <p style="margin-top: 1rem; font-weight: 600;">Esta arquitectura te permite comenzar inmediatamente con riesgo mínimo y crecer orgánicamente con tu negocio.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function filterTools(category) {
+            const cards = document.querySelectorAll('.tool-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

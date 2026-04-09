@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arquitecturas SaaS Profesionales</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+            background: var(--gradient);
+            border-radius: 0 0 2rem 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .nav-menu {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .nav-menu a {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: var(--primary);
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Architecture Diagram Styles */
+        .arch-container {
+            background: linear-gradient(180deg, #1a1f2e 0%, #0f172a 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .arch-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .arch-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .arch-level {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .arch-level.level-2 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .arch-level.level-3 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .arch-level.level-4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+
+        .arch-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .arch-price {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            color: var(--success);
+        }
+
+        /* Layer Styles */
+        .layer {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .layer-label {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #8b5cf6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+
+        .layer-content {
+            background: rgba(139, 92, 246, 0.1);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            padding-top: 2rem;
+        }
+
+        .layer-content.clients {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .layer-content.clients .layer-label {
+            background: #3b82f6;
+        }
+
+        .layer-content.database {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .layer-content.database .layer-label {
+            background: #f59e0b;
+        }
+
+        .layer-content.cdn {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        .layer-content.cdn .layer-label {
+            background: #06b6d4;
+        }
+
+        /* Service Box */
+        .service-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .service-box:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .service-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .service-badge {
+            margin-top: 0.5rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .service-badge.paid {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        /* Connection Arrow */
+        .connection-arrow {
+            text-align: center;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .arrow-line {
+            width: 2px;
+            height: 40px;
+            margin: 0 auto;
+        }
+
+        .arrow-line.blue { background: linear-gradient(to bottom, #3b82f6, #8b5cf6); }
+        .arrow-line.purple { background: linear-gradient(to bottom, #8b5cf6, #f59e0b); }
+        .arrow-line.orange { background: linear-gradient(to bottom, #f59e0b, #ef4444); }
+        .arrow-line.cyan { background: linear-gradient(to bottom, #06b6d4, #8b5cf6); }
+
+        .arrow-head {
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 12px solid;
+            margin: 0 auto;
+        }
+
+        .arrow-head.purple { border-top-color: #8b5cf6; }
+        .arrow-head.orange { border-top-color: #f59e0b; }
+        .arrow-head.red { border-top-color: #ef4444; }
+
+        /* Provider Box */
+        .provider-box {
+            background: rgba(139, 92, 246, 0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .feature-box.success { border-left-color: #10b981; background: rgba(16, 185, 129, 0.1); }
+        .feature-box.info { border-left-color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+        .feature-box.warning { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+        .feature-box.purple { border-left-color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+
+        .feature-box strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .arch-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.2rem; font-weight: bold; color: #fff;">🚀 Mi Espacio Digital</div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="index.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏠 Inicio</a>
+                <a href="servicios-hosting-db.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">📊 Hosting y BD</a>
+                <a href="arquitecturas-saas.html" style="color: #fff; background: rgba(255,255,255,0.1); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">🏗️ Arquitecturas</a>
+                <a href="manual-n8n-render.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🔧 Manual n8n</a>
+                <a href="aulavirtual.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🎓 Aula Virtual</a>
+                <a href="chatIA.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🤖 Chat IA</a>
+            </div>
+        </div>
+    </nav>
+    
+    <header>
+        <div class="container">
+            <h1>🏗️ Arquitecturas SaaS Profesionales</h1>
+            <p class="subtitle">Modelos de arquitectura inspirados en AWS, Azure y Google Cloud</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="servicios-hosting-db.html">📊 Hosting y BD</a>
+            <a href="manual-n8n-render.html">🔧 Manual n8n</a>
+            <a href="arquitecturas-saas.html" style="background: var(--primary);">🏗️ Arquitecturas</a>
+        </nav>
+
+        <!-- Arquitectura 1: Básica -->
+        <div class="section">
+            <h2 class="section-title">📐 Nivel 1: Arquitectura Básica</h2>
+            
+            <div class="arch-container">
+                <div class="arch-header">
+                    <span class="arch-level">NIVEL 1</span>
+                    <h3 class="arch-title">Arquitectura de Inicio</h3>
+                    <span class="arch-price">$0-8/mes</span>
+                </div>
+
+                <!-- Clientes -->
+                <div class="layer">
+                    <div class="layer-content clients">
+                        <span class="layer-label">CLIENTES</span>
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 1.5rem 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                                <div style="font-weight: 600; color: white; font-size: 1.2rem;">CLIENTES</div>
+                                <div style="font-size: 0.875rem; color: rgba(255,255,255,0.8);">Web • Mobile • API</div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span style="display: inline-block; background: rgba(59, 130, 246, 0.2); padding: 0.25rem 0.75rem; border-radius: 4px; margin: 0.25rem; font-size: 0.875rem;">🔒 HTTPS</span>
+                                <span style="display: inline-block; background: rgba(59, 130, 246, 0.2); padding: 0.25rem 0.75rem; border-radius: 4px; margin: 0.25rem; font-size: 0.875rem;">🌐 CDN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line blue"></div>
+                    <div class="arrow-head purple"></div>
+                </div>
+
+                <!-- Hosting -->
+                <div class="layer">
+                    <div class="layer-content">
+                        <span class="layer-label">HOSTING</span>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🔄</div>
+                                <div class="service-name">n8n</div>
+                                <div class="service-desc">Automatización</div>
+                                <span class="service-badge">FREE</span>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">🌐</div>
+                                <div class="service-name">Web Static</div>
+                                <div class="service-desc">Frontend</div>
+                                <span class="service-badge">FREE</span>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⚡</div>
+                                <div class="service-name">API</div>
+                                <div class="service-desc">Backend</div>
+                                <span class="service-badge">FREE</span>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <span class="provider-box">🚀 RENDER (Free Tier)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line purple"></div>
+                    <div class="arrow-head orange"></div>
+                </div>
+
+                <!-- Database -->
+                <div class="layer">
+                    <div class="layer-content database">
+                        <span class="layer-label">DATABASE</span>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🗄️</div>
+                                <div class="service-name">PostgreSQL</div>
+                                <div class="service-desc">500MB</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">🔐</div>
+                                <div class="service-name">Auth</div>
+                                <div class="service-desc">50K users</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">📁</div>
+                                <div class="service-name">Storage</div>
+                                <div class="service-desc">1GB</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <span class="provider-box" style="background: rgba(245, 158, 11, 0.3);">⚡ SUPABASE (Free)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features-grid">
+                <div class="feature-box success">
+                    <strong style="color: #10b981;">✅ Costo</strong>
+                    <p style="font-size: 0.875rem;">$0-8/mes según uso</p>
+                </div>
+                <div class="feature-box info">
+                    <strong style="color: #3b82f6;">✅ Ideal para</strong>
+                    <p style="font-size: 0.875rem;">Validar idea, MVP, testing</p>
+                </div>
+                <div class="feature-box warning">
+                    <strong style="color: #f59e0b;">✅ Límites</strong>
+                    <p style="font-size: 0.875rem;">750 hrs/mes, se suspende</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arquitectura 2: Producción -->
+        <div class="section">
+            <h2 class="section-title">📈 Nivel 2: Arquitectura Producción</h2>
+            
+            <div class="arch-container" style="border-color: rgba(59, 130, 246, 0.3);">
+                <div class="arch-header">
+                    <span class="arch-level level-2">NIVEL 2</span>
+                    <h3 class="arch-title">Arquitectura de Producción</h3>
+                    <span class="arch-price">$32/mes</span>
+                </div>
+
+                <!-- Clientes -->
+                <div class="layer">
+                    <div class="layer-content clients">
+                        <span class="layer-label">CLIENTES</span>
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #2563eb); padding: 1.5rem 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                                <div style="font-weight: 600; color: white; font-size: 1.2rem;">CLIENTES</div>
+                                <div style="font-size: 0.875rem; color: rgba(255,255,255,0.8);">Web • Mobile • API</div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <span style="display: inline-block; background: rgba(59, 130, 246, 0.2); padding: 0.25rem 0.75rem; border-radius: 4px; margin: 0.25rem; font-size: 0.875rem;">🔒 HTTPS</span>
+                                <span style="display: inline-block; background: rgba(59, 130, 246, 0.2); padding: 0.25rem 0.75rem; border-radius: 4px; margin: 0.25rem; font-size: 0.875rem;">🌐 Custom Domain</span>
+                                <span style="display: inline-block; background: rgba(59, 130, 246, 0.2); padding: 0.25rem 0.75rem; border-radius: 4px; margin: 0.25rem; font-size: 0.875rem;">✅ SSL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line blue"></div>
+                    <div class="arrow-head purple"></div>
+                </div>
+
+                <!-- Hosting -->
+                <div class="layer">
+                    <div class="layer-content">
+                        <span class="layer-label">HOSTING</span>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🔄</div>
+                                <div class="service-name">n8n</div>
+                                <div class="service-desc">Always On</div>
+                                <span class="service-badge paid">$7/mes</span>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">🌐</div>
+                                <div class="service-name">Web SSR</div>
+                                <div class="service-desc">Next.js/Nuxt</div>
+                                <span class="service-badge">FREE</span>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⚡</div>
+                                <div class="service-name">API</div>
+                                <div class="service-desc">Fast & Reliable</div>
+                                <span class="service-badge">FREE</span>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <span class="provider-box">🚀 RENDER Starter ($7/mes)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line purple"></div>
+                    <div class="arrow-head orange"></div>
+                </div>
+
+                <!-- Database -->
+                <div class="layer">
+                    <div class="layer-content database">
+                        <span class="layer-label">DATABASE</span>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🗄️</div>
+                                <div class="service-name">PostgreSQL</div>
+                                <div class="service-desc">8GB</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">🔐</div>
+                                <div class="service-name">Auth + RLS</div>
+                                <div class="service-desc">100K users</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">📁</div>
+                                <div class="service-name">Storage</div>
+                                <div class="service-desc">100GB</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⚡</div>
+                                <div class="service-name">Edge Fn</div>
+                                <div class="service-desc">500K/mes</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <span class="provider-box" style="background: rgba(245, 158, 11, 0.3);">⚡ SUPABASE Pro ($25/mes)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features-grid">
+                <div class="feature-box info">
+                    <strong style="color: #3b82f6;">✅ Costo</strong>
+                    <p style="font-size: 0.875rem;">$32/mes total</p>
+                </div>
+                <div class="feature-box purple">
+                    <strong style="color: #8b5cf6;">✅ Ideal para</strong>
+                    <p style="font-size: 0.875rem;">Producción, primeros clientes</p>
+                </div>
+                <div class="feature-box warning">
+                    <strong style="color: #f59e0b;">✅ Beneficios</strong>
+                    <p style="font-size: 0.875rem;">Always on, dominio custom</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arquitectura 3: Multi-Servicio -->
+        <div class="section">
+            <h2 class="section-title">🏢 Nivel 3: Arquitectura Multi-Servicio</h2>
+            
+            <div class="arch-container" style="border-color: rgba(245, 158, 11, 0.3);">
+                <div class="arch-header">
+                    <span class="arch-level level-3">NIVEL 3</span>
+                    <h3 class="arch-title">Arquitectura Multi-Servicio</h3>
+                    <span class="arch-price">$50-100/mes</span>
+                </div>
+
+                <!-- Clientes -->
+                <div class="layer">
+                    <div class="layer-content clients">
+                        <span class="layer-label">CLIENTES</span>
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #f59e0b, #d97706); padding: 1.5rem 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">👥</div>
+                                <div style="font-weight: 600; color: white; font-size: 1.2rem;">CLIENTES</div>
+                                <div style="font-size: 0.875rem; color: rgba(255,255,255,0.8);">Múltiples servicios SaaS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line orange"></div>
+                    <div class="arrow-head red"></div>
+                </div>
+
+                <!-- Multi-Service Hosting -->
+                <div class="layer">
+                    <div class="layer-content" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <span class="layer-label" style="background: #ef4444;">MULTI-SERVICE</span>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🔄</div>
+                                <div class="service-name">n8n</div>
+                                <div class="service-desc">Automatización</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">📊</div>
+                                <div class="service-name">Grafana</div>
+                                <div class="service-desc">Monitoreo</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">📈</div>
+                                <div class="service-name">Metabase</div>
+                                <div class="service-desc">Analytics</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⏱️</div>
+                                <div class="service-name">Uptime Kuma</div>
+                                <div class="service-desc">Status</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⚡</div>
+                                <div class="service-name">API</div>
+                                <div class="service-desc">Backend</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">🌐</div>
+                                <div class="service-name">Web</div>
+                                <div class="service-desc">Frontend</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 1rem;">
+                            <span class="provider-box" style="background: rgba(239, 68, 68, 0.3);">🚀 RENDER Standard ($25/mes)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line" style="background: linear-gradient(to bottom, #ef4444, #f59e0b);"></div>
+                    <div class="arrow-head orange"></div>
+                </div>
+
+                <!-- Database -->
+                <div class="layer">
+                    <div class="layer-content database">
+                        <span class="layer-label">DATABASE + CACHE</span>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.5rem;">
+                            <div class="service-box">
+                                <div class="service-icon">🗄️</div>
+                                <div class="service-name">Supabase</div>
+                                <div class="service-desc">PostgreSQL + Auth</div>
+                            </div>
+                            <div class="service-box">
+                                <div class="service-icon">⚡</div>
+                                <div class="service-name">Redis</div>
+                                <div class="service-desc">Cache + Queue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features-grid">
+                <div class="feature-box warning">
+                    <strong style="color: #f59e0b;">✅ Costo</strong>
+                    <p style="font-size: 0.875rem;">$50-100/mes</p>
+                </div>
+                <div class="feature-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1);">
+                    <strong style="color: #ef4444;">✅ Ideal para</strong>
+                    <p style="font-size: 0.875rem;">Múltiples servicios SaaS</p>
+                </div>
+                <div class="feature-box purple">
+                    <strong style="color: #8b5cf6;">✅ Beneficios</strong>
+                    <p style="font-size: 0.875rem;">Monitoreo + Analytics</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Arquitectura 4: Enterprise -->
+        <div class="section">
+            <h2 class="section-title">🌐 Nivel 4: Arquitectura Enterprise</h2>
+            
+            <div class="arch-container" style="border-color: rgba(139, 92, 246, 0.3);">
+                <div class="arch-header">
+                    <span class="arch-level level-4">NIVEL 4</span>
+                    <h3 class="arch-title">Arquitectura Enterprise</h3>
+                    <span class="arch-price">$100-300/mes</span>
+                </div>
+
+                <!-- CDN -->
+                <div class="layer">
+                    <div class="layer-content cdn">
+                        <span class="layer-label" style="background: #06b6d4;">CDN GLOBAL</span>
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; background: linear-gradient(135deg, #06b6d4, #0891b2); padding: 1.5rem 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌍</div>
+                                <div style="font-weight: 600; color: white; font-size: 1.2rem;">CDN GLOBAL</div>
+                                <div style="font-size: 0.875rem; color: rgba(255,255,255,0.8);">Cloudflare / Vercel Edge</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line cyan"></div>
+                    <div class="arrow-head purple"></div>
+                </div>
+
+                <!-- Load Balancer -->
+                <div class="layer">
+                    <div class="layer-content" style="text-align: center;">
+                        <span class="layer-label">LOAD BALANCER</span>
+                        <div style="font-size: 3rem; margin-top: 0.5rem;">⚖️</div>
+                        <div style="font-weight: 600; color: white; font-size: 1.2rem;">Multi-Region</div>
+                    </div>
+                </div>
+
+                <!-- Multi-Provider -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin: 2rem 0;">
+                    <!-- Vercel -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="text-align: center; margin-bottom: 1rem;">
+                            <div style="font-size: 2rem;">▲</div>
+                            <div style="font-weight: 600; color: white;">Vercel</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Frontend</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.5rem; text-align: center; font-size: 0.75rem;">Next.js</div>
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.5rem; text-align: center; font-size: 0.75rem;">SSR</div>
+                        </div>
+                    </div>
+                    <!-- Render -->
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.1);">
+                        <div style="text-align: center; margin-bottom: 1rem;">
+                            <div style="font-size: 2rem;">🚀</div>
+                            <div style="font-weight: 600; color: white;">Render</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Backend</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;">
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.5rem; text-align: center; font-size: 0.75rem;">n8n</div>
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 0.5rem; text-align: center; font-size: 0.75rem;">API</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conexión -->
+                <div class="connection-arrow">
+                    <div class="arrow-line purple"></div>
+                    <div class="arrow-head orange"></div>
+                </div>
+
+                <!-- Data Layer -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                    <div class="layer-content database">
+                        <span class="layer-label">PRIMARY DB</span>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🗄️</div>
+                            <div style="font-weight: 600; color: white;">Supabase</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Primary Database</div>
+                        </div>
+                    </div>
+                    <div class="layer-content" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                        <span class="layer-label" style="background: #ef4444;">CACHE</span>
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚡</div>
+                            <div style="font-weight: 600; color: white;">Railway</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary);">Redis + Queue</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="features-grid">
+                <div class="feature-box purple">
+                    <strong style="color: #8b5cf6;">✅ Costo</strong>
+                    <p style="font-size: 0.875rem;">$100-300/mes</p>
+                </div>
+                <div class="feature-box" style="border-left-color: #06b6d4; background: rgba(6, 182, 212, 0.1);">
+                    <strong style="color: #06b6d4;">✅ Ideal para</strong>
+                    <p style="font-size: 0.875rem;">Escala empresarial</p>
+                </div>
+                <div class="feature-box" style="border-left-color: #ef4444; background: rgba(239, 68, 68, 0.1);">
+                    <strong style="color: #ef4444;">✅ Beneficios</strong>
+                    <p style="font-size: 0.875rem;">Alta disponibilidad, CDN global</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendación -->
+        <div class="section" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 16px; padding: 2rem; color: white;">
+            <h2 style="margin-bottom: 1.5rem;">🎯 ¿Qué Arquitectura Elegir?</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px;">
+                    <strong style="font-size: 1.1rem;">🚀 Empezando</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Nivel 1: Costo mínimo, ideal para validar tu idea.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px;">
+                    <strong style="font-size: 1.1rem;">📈 Primeros Clientes</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Nivel 2: Mejor rendimiento y disponibilidad.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px;">
+                    <strong style="font-size: 1.1rem;">🏢 Múltiples Servicios</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Nivel 3: Ofrecer varios SaaS simultáneamente.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 12px;">
+                    <strong style="font-size: 1.1rem;">🌐 Escala Empresarial</strong>
+                    <p style="font-size: 0.9rem; margin-top: 0.5rem; opacity: 0.9;">Nivel 4: Máxima disponibilidad y rendimiento.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

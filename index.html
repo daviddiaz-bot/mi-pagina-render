@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Espacio Digital - Render</title>
+    <title>Mi Espacio Digital - Centro de Recursos SaaS</title>
     <style>
         :root {
             --primary: #6366f1;
+            --secondary: #7c3aed;
             --bg: #0f172a;
             --card-bg: #1e293b;
             --text: #f8fafc;
             --accent: #818cf8;
+            --success: #10b981;
+            --warning: #f59e0b;
             --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
         }
 
@@ -24,12 +27,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
-            padding: 2rem;
             overflow-x: hidden;
         }
 
@@ -44,49 +42,119 @@
             z-index: -1;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 4rem;
-            animation: fadeInDown 0.8s ease-out;
+        /* Navigation */
+        .nav-bar {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        h1 {
-            font-size: 3.5rem;
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
             font-weight: 800;
-            letter-spacing: -0.025em;
             background: linear-gradient(to right, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
         }
 
-        p.subtitle {
-            color: #94a3b8;
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--gradient);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
             font-size: 1.2rem;
         }
 
-        .menu-container {
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title span {
+            font-size: 1.5rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            width: 100%;
-            max-width: 1100px;
-            animation: fadeInUp 1s ease-out;
+            gap: 1.5rem;
         }
 
         .card {
             background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 24px;
+            padding: 2rem;
+            border-radius: 16px;
             text-decoration: none;
             color: var(--text);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
         }
 
         .card::before {
@@ -103,107 +171,526 @@
         }
 
         .card:hover {
-            transform: translateY(-12px) scale(1.02);
+            transform: translateY(-8px);
             border-color: rgba(99, 102, 241, 0.5);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
         }
 
         .card:hover::before {
             opacity: 0.05;
         }
 
-        .icon-box {
-            width: 60px;
-            height: 60px;
+        .card-icon {
+            width: 50px;
+            height: 50px;
             background: rgba(99, 102, 241, 0.1);
-            border-radius: 16px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            transition: transform 0.4s ease;
-            z-index: 1;
-        }
-
-        .card:hover .icon-box {
-            transform: rotate(10deg) scale(1.1);
-            background: var(--primary);
-            color: white;
-        }
-
-        .card h2 {
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
             z-index: 1;
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1);
+            background: var(--primary);
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            z-index: 1;
+            position: relative;
         }
 
         .card p {
             color: #94a3b8;
             line-height: 1.6;
+            font-size: 0.9rem;
             z-index: 1;
+            position: relative;
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .card-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            z-index: 1;
+            position: relative;
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Category Cards */
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        @media (max-width: 640px) {
-            h1 { font-size: 2.5rem; }
-            .menu-container { grid-template-columns: 1fr; }
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .category-desc {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Architecture Section */
+        .architecture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .arch-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .arch-card h4 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .arch-diagram {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--accent);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .arch-features {
+            list-style: none;
+        }
+
+        .arch-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .arch-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <div class="nav-logo">🚀 Mi Espacio Digital</div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">🏠 Inicio</a>
+                <a href="servicios-hosting-db.html" class="nav-link">📊 Hosting y BD</a>
+                <a href="arquitecturas-saas.html" class="nav-link">🏗️ Arquitecturas</a>
+                <a href="manual-n8n-render.html" class="nav-link">🔧 Manual n8n</a>
+                <a href="aulavirtual.html" class="nav-link">🎓 Aula Virtual</a>
+                <a href="chatIA.html" class="nav-link">🤖 Chat IA</a>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Header -->
     <header>
-        <h1>Mi Espacio Digital</h1>
-        <p class="subtitle">Explora mis proyectos desplegados en Render</p>
+        <h1>Centro de Recursos SaaS</h1>
+        <p class="subtitle">Todo lo que necesitas para tu negocio de servicios digitales</p>
     </header>
 
-    <div class="menu-container">
-        <!-- Aula Virtual -->
-        <a href="aulavirtual.html" class="card">
-            <div class="icon-box">🎓</div>
-            <h2>Aula Virtual</h2>
-            <p>Accede a la plataforma de aprendizaje y recursos educativos.</p>
-        </a>
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">5+</div>
+                <div class="stat-label">Hosting Analizados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">Herramientas Open Source</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Arquitecturas SaaS</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">$8</div>
+                <div class="stat-label">Costo Mínimo/mes</div>
+            </div>
+        </div>
 
-        <!-- Chat IA -->
-        <a href="chatIA.html" class="card">
-            <div class="icon-box">🤖</div>
-            <h2>Chat IA</h2>
-            <p>Interactúa con mi asistente inteligente personalizado.</p>
-        </a>
+        <!-- Categorías Principales -->
+        <div class="section">
+            <h2 class="section-title"><span>📂</span> Categorías de Recursos</h2>
+            
+            <!-- Comparativos -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">📊</div>
+                    <div>
+                        <h3 class="category-title">Comparativos y Análisis</h3>
+                        <p class="category-desc">Análisis detallado de servicios de hosting, bases de datos y herramientas open source</p>
+                    </div>
+                </div>
+                <div class="cards-grid">
+                    <a href="servicios-hosting-db.html" class="card">
+                        <div class="card-icon">🌐</div>
+                        <h3>Hosting y Bases de Datos</h3>
+                        <p>Top 5 servicios de hosting y PostgreSQL con análisis de costos, rendimiento y escalabilidad.</p>
+                        <span class="card-tag">Actualizado 2024</span>
+                    </a>
+                    <a href="servicios-hosting-db.html#herramientas" class="card">
+                        <div class="card-icon">🛠️</div>
+                        <h3>Herramientas Open Source</h3>
+                        <p>Catálogo de 15+ herramientas open source para ofrecer como SaaS: n8n, Grafana, Wazuh y más.</p>
+                        <span class="card-tag">Con comandos de despliegue</span>
+                    </a>
+                </div>
+            </div>
 
-        <!-- Herramienta de Conexión -->
-        <a href="HerramientaConexion.html" class="card">
-            <div class="icon-box">🔌</div>
-            <h2>Conexión</h2>
-            <p>Herramienta para gestionar y probar conexiones de red.</p>
-        </a>
+            <!-- Manuales -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">📚</div>
+                    <div>
+                        <h3 class="category-title">Manuales de Implementación</h3>
+                        <p class="category-desc">Guías paso a paso para desplegar y configurar servicios</p>
+                    </div>
+                </div>
+                <div class="cards-grid">
+                    <a href="manual-n8n-render.html" class="card">
+                        <div class="card-icon">🔄</div>
+                        <h3>Manual n8n en Render</h3>
+                        <p>Guía completa para desplegar n8n en Render con Supabase. Incluye arquitectura, comandos y mejores prácticas.</p>
+                        <span class="card-tag">12 Secciones</span>
+                    </a>
+                    <a href="aulavirtual.html" class="card">
+                        <div class="card-icon">🎓</div>
+                        <h3>Aula Virtual</h3>
+                        <p>Plataforma de aprendizaje y recursos educativos para capacitación continua.</p>
+                        <span class="card-tag">Educativo</span>
+                    </a>
+                </div>
+            </div>
 
-        <!-- Kubernetes -->
-        <a href="Kubernetes.html" class="card">
-            <div class="icon-box">☸️</div>
-            <h2>Kubernetes</h2>
-            <p>Panel de control y monitoreo de clusters de contenedores.</p>
-        </a>
+            <!-- Proyectos -->
+            <div class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">🚀</div>
+                    <div>
+                        <h3 class="category-title">Proyectos Desplegados</h3>
+                        <p class="category-desc">Aplicaciones y servicios activos en Render</p>
+                    </div>
+                </div>
+                <div class="cards-grid">
+                    <a href="chatIA.html" class="card">
+                        <div class="card-icon">🤖</div>
+                        <h3>Chat IA</h3>
+                        <p>Asistente inteligente personalizado para consultas y automatización.</p>
+                        <span class="card-tag">IA & Automatización</span>
+                    </a>
+                    <a href="HerramientaConexion.html" class="card">
+                        <div class="card-icon">🔌</div>
+                        <h3>Conexión</h3>
+                        <p>Herramienta para gestionar y probar conexiones de red y APIs.</p>
+                        <span class="card-tag">Redes</span>
+                    </a>
+                    <a href="Kubernetes.html" class="card">
+                        <div class="card-icon">☸️</div>
+                        <h3>Kubernetes</h3>
+                        <p>Panel de control y monitoreo de clusters de contenedores.</p>
+                        <span class="card-tag">DevOps</span>
+                    </a>
+                    <a href="ServidorMCP.html" class="card">
+                        <div class="card-icon">🖥️</div>
+                        <h3>Servidor MCP</h3>
+                        <p>Administración y estado del servidor Model Context Protocol.</p>
+                        <span class="card-tag">Protocolos</span>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-        <!-- Servidor MCP -->
-        <a href="ServidorMCP.html" class="card">
-            <div class="icon-box">🖥️</div>
-            <h2>Servidor MCP</h2>
-            <p>Administración y estado del servidor Model Context Protocol.</p>
-        </a>
+        <!-- Arquitecturas SaaS -->
+        <div class="section">
+            <h2 class="section-title"><span>🏗️</span> Arquitecturas SaaS Recomendadas</h2>
+            
+            <div class="architecture-grid">
+                <!-- Arquitectura 1 -->
+                <div class="arch-card">
+                    <h4>📐 Arquitectura Básica (Inicio)</h4>
+                    <div class="arch-diagram">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)          │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     RENDER (Hosting Gratuito)        │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐ │
+│  │  n8n    │  │  Web    │  │ API  │ │
+│  │ (Free)  │  │ Static  │  │Node  │ │
+│  └────┬────┘  └────┬────┘  └──┬───┘ │
+└───────┼────────────┼──────────┼─────┘
+        │            │          │
+┌───────▼────────────▼──────────▼─────┐
+│    SUPABASE (PostgreSQL Free)       │
+│    • Base de datos                  │
+│    • Autenticación                  │
+│    • Storage                        │
+└──────────────────────���──────────────┘
+
+Costo: $0-8/mes</pre>
+                    </div>
+                    <ul class="arch-features">
+                        <li>✅ Costo mínimo</li>
+                        <li>✅ Ideal para empezar</li>
+                        <li>✅ Escalable gradualmente</li>
+                        <li>✅ Sin compromiso</li>
+                    </ul>
+                </div>
+
+                <!-- Arquitectura 2 -->
+                <div class="arch-card">
+                    <h4>📈 Arquitectura Producción</h4>
+                    <div class="arch-diagram">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)          │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     RENDER (Starter $7/mes)          │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐ ��
+│  │  n8n    │  │  Web    │  │ API  │ │
+│  │Always On│  │  SSR    │  │Fast  │ │
+│  └────┬────┘  └────┬────┘  └──┬───┘ │
+│       │            │          │      │
+│       └────────────┼──────────┘      │
+└────────────────────┼─────────────────┘
+                     │
+┌────────────────────▼─────────────────┐
+│    SUPABASE PRO ($25/mes)            │
+│    • 8GB Base de datos                │
+│    • Auth + RLS                       │
+│    • Edge Functions                   │
+└─────────────────────────────────────┘
+
+Costo: $32/mes</pre>
+                    </div>
+                    <ul class="arch-features">
+                        <li>✅ Siempre activo</li>
+                        <li>✅ Mejor rendimiento</li>
+                        <li>✅ Dominio personalizado</li>
+                        <li>✅ SSL incluido</li>
+                    </ul>
+                </div>
+
+                <!-- Arquitectura 3 -->
+                <div class="arch-card">
+                    <h4>🏢 Arquitectura Multi-Servicio</h4>
+                    <div class="arch-diagram">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (Web/App)           │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     RENDER (Multiple Services)       │
+│  ┌─────────┐  ┌─────────┐  ┌──────┐ │
+│  │  n8n    │  │ Grafana │  │ API  │ │
+│  │ (Starter)│  │(Free)   │  │(Std) │ │
+│  └────┬────┘  └────┬────┘  └──┬───┘ │
+│       │            │          │      │
+│  ┌────▼────┐  ┌────▼────┐     │      │
+│  │ Uptime  │  │Metabase │     │      │
+│  │  Kuma   │  │ (Free)  │     │      │
+│  └─────────┘  └─────────┘     │      │
+└───────────────────────────────┼─────┘
+                                │
+┌───────────────────────────────▼─────┐
+│    SUPABASE + REDIS                 │
+│    • PostgreSQL                      │
+│    • Redis Cache                     │
+│    • Storage                         │
+└─────────────────────────────────────┘
+
+Costo: $50-100/mes</pre>
+                    </div>
+                    <ul class="arch-features">
+                        <li>✅ Múltiples servicios</li>
+                        <li>✅ Monitoreo integrado</li>
+                        <li>✅ Analytics</li>
+                        <li>✅ Alta disponibilidad</li>
+                    </ul>
+                </div>
+
+                <!-- Arquitectura 4 -->
+                <div class="arch-card">
+                    <h4>🌐 Arquitectura Enterprise</h4>
+                    <div class="arch-diagram">
+<pre>┌─────────────────────────────────────┐
+│         CLIENTES (CDN Global)        │
+└─────────────────┬───────────────────┘
+                  │
+┌─────────────────▼───────────────────┐
+│     MULTI-PROVIDER                   │
+│  ┌─────────┐  ┌─────────┐           │
+│  │ Vercel  │  │ Render  │           │
+│  │(Front)  │  │(Backend)│           │
+│  └────┬────┘  └────┬────┘           │
+│       │            │                 │
+│  ┌────▼────────────▼────┐           │
+│  │   Load Balancer      │           │
+│  └──────────────────────┘           │
+└─────────────────────────────────────┘
+        │              │
+┌───────▼──────┐  ┌────▼───────────────┐
+│  SUPABASE    │  │   Railway          │
+│  (Primary)   │  │   (Redis/Queue)    │
+└──────────────┘  └────────────────────┘
+
+Costo: $100-300/mes</pre>
+                    </div>
+                    <ul class="arch-features">
+                        <li>✅ Alta disponibilidad</li>
+                        <li>✅ CDN global</li>
+                        <li>✅ Load balancing</li>
+                        <li>✅ Escalabilidad máxima</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recursos Adicionales -->
+        <div class="section">
+            <h2 class="section-title"><span>📖</span> Recursos Adicionales</h2>
+            <div class="cards-grid">
+                <div class="card" style="cursor: default;">
+                    <div class="card-icon">💡</div>
+                    <h3>Costo Mínimo Recomendado</h3>
+                    <p>Para empezar: Render Free + Supabase Free = $0/mes. Para producción: Render Starter + Supabase Free = $7/mes.</p>
+                    <span class="card-tag">Desde $0</span>
+                </div>
+                <div class="card" style="cursor: default;">
+                    <div class="card-icon">🎯</div>
+                    <h3>Stack Recomendado</h3>
+                    <p>Render (hosting) + Supabase (base de datos) + n8n (automatización) + Cloudflare (CDN/DNS).</p>
+                    <span class="card-tag">Mejor Balance</span>
+                </div>
+                <div class="card" style="cursor: default;">
+                    <div class="card-icon">⚡</div>
+                    <h3>Tiempo de Despliegue</h3>
+                    <p>n8n en Render: ~15 minutos. Supabase setup: ~10 minutos. Dominio personalizado: ~5 minutos.</p>
+                    <span class="card-tag">30 min total</span>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <p>🚀 Mi Espacio Digital - Centro de Recursos SaaS | Actualizado 2024</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">Hosting en Render | Base de datos en Supabase | Automatización con n8n</p>
+    </footer>
 </body>
 </html>

@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Implementación - n8n en Render</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+            background: var(--gradient);
+            border-radius: 0 0 2rem 2rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            margin: 1rem 0;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .architecture-diagram {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .architecture-diagram pre {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-align: left;
+            overflow-x: auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .nav-menu {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .nav-menu a {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            background: var(--primary);
+        }
+
+        .toc {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toc a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); padding: 1rem 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.3);">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.2rem; font-weight: bold; color: #fff;">🚀 Mi Espacio Digital</div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="index.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏠 Inicio</a>
+                <a href="servicios-hosting-db.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">📊 Hosting y BD</a>
+                <a href="arquitecturas-saas.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🏗️ Arquitecturas</a>
+                <a href="manual-n8n-render.html" style="color: #fff; background: rgba(255,255,255,0.1); text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px;">🔧 Manual n8n</a>
+                <a href="aulavirtual.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🎓 Aula Virtual</a>
+                <a href="chatIA.html" style="color: #a0a0a0; text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;">🤖 Chat IA</a>
+            </div>
+        </div>
+    </nav>
+    
+    <header>
+        <div class="container">
+            <h1>Manual de Implementación</h1>
+            <p class="subtitle">n8n en Render - Guía Completa para Negocios SaaS</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Navegación -->
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="servicios-hosting-db.html">📊 Hosting y BD</a>
+            <a href="manual-n8n-render.html" class="active">🔧 Manual n8n</a>
+        </nav>
+
+        <!-- Tabla de Contenidos -->
+        <div class="toc">
+            <h3>📑 Tabla de Contenidos</h3>
+            <ul>
+                <li><a href="#introduccion">1. Introducción y Requisitos</a></li>
+                <li><a href="#arquitectura">2. Arquitectura de la Solución</a></li>
+                <li><a href="#preparacion">3. Preparación del Entorno</a></li>
+                <li><a href="#render-config">4. Configuración en Render</a></li>
+                <li><a href="#despliegue">5. Despliegue de n8n</a></li>
+                <li><a href="#base-datos">6. Configuración de Base de Datos</a></li>
+                <li><a href="#dominio">7. Dominio Personalizado y SSL</a></li>
+                <li><a href="#workflows">8. Creación de Workflows</a></li>
+                <li><a href="#monitoreo">9. Monitoreo y Mantenimiento</a></li>
+                <li><a href="#escalado">10. Escalado y Optimización</a></li>
+                <li><a href="#costos">11. Análisis de Costos</a></li>
+                <li><a href="#mejores-practicas">12. Mejores Prácticas</a></li>
+            </ul>
+        </div>
+
+        <!-- Introducción -->
+        <div class="section" id="introduccion">
+            <h2 class="section-title">1. Introducción y Requisitos</h2>
+            
+            <div class="card">
+                <h3>¿Qué es n8n?</h3>
+                <p>n8n es una plataforma de automatización de workflows open source que permite conectar diferentes servicios y APIs sin necesidad de código. Es ideal para ofrecer servicios de automatización a clientes.</p>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>✓ Self-hosted</strong><br>
+                        Control total de datos
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ Sin límites</strong><br>
+                        Ejecuciones ilimitadas
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ 400+ nodos</strong><br>
+                        Integraciones variadas
+                    </div>
+                    <div class="feature-item">
+                        <strong>✓ Extensible</strong><br>
+                        Nodos personalizados
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>📋 Requisitos Previos</h3>
+                <ul>
+                    <li>✅ Cuenta en <a href="https://render.com" target="_blank" style="color: var(--accent);">Render.com</a></li>
+                    <li>✅ Cuenta en <a href="https://supabase.com" target="_blank" style="color: var(--accent);">Supabase</a> (base de datos)</li>
+                    <li>✅ Dominio personalizado (opcional pero recomendado)</li>
+                    <li>✅ Conocimientos básicos de Docker</li>
+                    <li>✅ Git instalado en tu máquina</li>
+                </ul>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Importante:</strong> El plan gratuito de Render tiene limitaciones. Para producción, se recomienda el plan Starter ($7/mes) para mejor rendimiento y disponibilidad.
+            </div>
+        </div>
+
+        <!-- Arquitectura -->
+        <div class="section" id="arquitectura">
+            <h2 class="section-title">2. Arquitectura de la Solución</h2>
+            
+            <div class="architecture-diagram">
+                <pre>
+┌─────────────────────────────────────────────────────────────────┐
+│                    ARQUITECTURA n8n EN RENDER                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│    ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     │
+│    │   Cliente   │────▶│   Render    │────▶│   n8n       │     │
+│    │   (Web)     │     │   (CDN)     │     │  (Docker)   │     │
+│    └─────────────┘     └─────────────┘     └──────┬──────┘     │
+│                                                   │              │
+│                              ┌────────────────────┼────────┐   │
+│                              │                    │        │   │
+│                              ▼                    ▼        ▼   │
+│                    ┌─────────────┐     ┌─────────────┐        │
+│                    │  Supabase   ��     │   Redis     │        │
+│                    │ (PostgreSQL)│     │  (Cache)    │        │
+│                    └─────────────┘     └─────────────┘        │
+│                                                                  │
+│    ┌─────────────────────────────────────────────────────────┐ │
+│    │              SERVICIOS EXTERNOS (APIs)                  │ │
+│    │  • WhatsApp API  • Email SMTP  • Google APIs           │ │
+│    │  • Slack         • Telegram    • Custom Webhooks        │ │
+│    └─────────────────────────────────────────────────────────┘ │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+                </pre>
+            </div>
+
+            <div class="card">
+                <h3>🏗️ Componentes de la Arquitectura</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--primary); color: white;">
+                            <th style="padding: 1rem; text-align: left;">Componente</th>
+                            <th style="padding: 1rem; text-align: left;">Servicio</th>
+                            <th style="padding: 1rem; text-align: left;">Costo</th>
+                            <th style="padding: 1rem; text-align: left;">Función</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Hosting</td>
+                            <td style="padding: 1rem;">Render</td>
+                            <td style="padding: 1rem; color: var(--success);">$0-7/mes</td>
+                            <td style="padding: 1rem;">Ejecutar n8n</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Base de datos</td>
+                            <td style="padding: 1rem;">Supabase</td>
+                            <td style="padding: 1rem; color: var(--success);">$0/mes</td>
+                            <td style="padding: 1rem;">Persistencia de datos</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Cache</td>
+                            <td style="padding: 1rem;">Render Redis</td>
+                            <td style="padding: 1rem; color: var(--success);">$0/mes</td>
+                            <td style="padding: 1rem;">Sesiones y cache</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem;">Dominio</td>
+                            <td style="padding: 1rem;">Cloudflare/Namecheap</td>
+                            <td style="padding: 1rem; color: var(--success);">~$12/año</td>
+                            <td style="padding: 1rem;">URL profesional</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Preparación -->
+        <div class="section" id="preparacion">
+            <h2 class="section-title">3. Preparación del Entorno</h2>
+            
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">1</span>
+                    Crear cuenta en Render
+                </div>
+                <p>1. Ve a <a href="https://render.com" target="_blank" style="color: var(--accent);">render.com</a></p>
+                <p>2. Haz clic en "Get Started for Free"</p>
+                <p>3. Regístrate con GitHub, GitLab o email</p>
+                <p>4. Verifica tu cuenta</p>
+            </div>
+
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">2</span>
+                    Crear cuenta en Supabase
+                </div>
+                <p>1. Ve a <a href="https://supabase.com" target="_blank" style="color: var(--accent);">supabase.com</a></p>
+                <p>2. Haz clic en "Start your project"</p>
+                <p>3. Crea una organización</p>
+                <p>4. Crea un nuevo proyecto</p>
+                <p>5. Guarda la contraseña de la base de datos</p>
+                
+                <div class="code-block">
+<code># Obtener credenciales de Supabase
+# Settings > Database > Connection string (URI)
+
+# Formato de conexión:
+postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres</code>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">3</span>
+                    Preparar archivo Docker Compose
+                </div>
+                <p>Crea un archivo <code>docker-compose.yml</code> para n8n:</p>
+                
+                <div class="code-block">
+<code>version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - GENERIC_TIMEZONE=America/Bogota
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_PORT=6543
+      - DB_POSTGRESDB_DATABASE=postgres
+      - DB_POSTGRESDB_USER=${DB_USER}
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: always
+
+volumes:
+  n8n_data:</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuración en Render -->
+        <div class="section" id="render-config">
+            <h2 class="section-title">4. Configuración en Render</h2>
+            
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">4</span>
+                    Crear Web Service en Render
+                </div>
+                
+                <p><strong>Opción A: Usando imagen Docker</strong></p>
+                <ol style="margin-left: 1.5rem;">
+                    <li>En el dashboard de Render, haz clic en "New +"</li>
+                    <li>Selecciona "Web Service"</li>
+                    <li>Elige "Deploy a Docker image"</li>
+                    <li>Ingresa la imagen: <code>n8nio/n8n:latest</code></li>
+                    <li>Configura el nombre del servicio (ej: mi-n8n)</li>
+                    <li>Selecciona la región más cercana</li>
+                    <li>Elige el plan (Free o Starter)</li>
+                </ol>
+
+                <div class="info-box" style="margin-top: 1rem;">
+                    <strong>💡 Tip:</strong> El plan Free tiene limitaciones: 750 horas/mes, se suspende después de 15 min de inactividad. Para producción, usa Starter ($7/mes).
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">5</span>
+                    Configurar Variables de Entorno
+                </div>
+                
+                <p>Variables de entorno requeridas en Render:</p>
+                
+                <div class="code-block">
+<code># Variables de entorno para Render
+
+# Host y URL
+N8N_HOST=tu-n8n.onrender.com
+WEBHOOK_URL=https://tu-n8n.onrender.com/
+
+# Autenticación
+N8N_BASIC_AUTH_ACTIVE=true
+N8N_BASIC_AUTH_USER=admin
+N8N_BASIC_AUTH_PASSWORD=tu-contraseña-segura
+
+# Base de datos (Supabase)
+DB_TYPE=postgresdb
+DB_POSTGRESDB_HOST=aws-0-us-east-1.pooler.supabase.com
+DB_POSTGRESDB_PORT=6543
+DB_POSTGRESDB_DATABASE=postgres
+DB_POSTGRESDB_USER=postgres.tu-project-ref
+DB_POSTGRESDB_PASSWORD=tu-contraseña-supabase
+
+# Configuración
+NODE_ENV=production
+GENERIC_TIMEZONE=America/Bogota
+N8N_PORT=5678</code>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Seguridad:</strong> Nunca uses contraseñas débiles. Genera contraseñas seguras con: <code>openssl rand -base64 32</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Despliegue -->
+        <div class="section" id="despliegue">
+            <h2 class="section-title">5. Despliegue de n8n</h2>
+            
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">6</span>
+                    Desplegar desde Docker Hub
+                </div>
+                
+                <p>Configuración en Render Dashboard:</p>
+                
+                <div class="code-block">
+<code># Configuración del servicio Web
+
+Name: n8n-production
+Region: Oregon (us-west) o Virginia (us-east)
+Service Type: Web Service
+Environment: Docker
+Image URL: n8nio/n8n:latest
+Plan: Starter ($7/mes) recomendado
+
+# Puerto
+Port: 5678
+
+# Comando de inicio (opcional)
+Start Command: n8n start</code>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">7</span>
+                    Desplegar desde Repositorio Git
+                </div>
+                
+                <p>Alternativa: Crear repositorio propio</p>
+                
+                <div class="code-block">
+<code># Estructura del repositorio
+n8n-deploy/
+├── Dockerfile
+├── docker-compose.yml
+├── .env.example
+└── README.md
+
+# Dockerfile personalizado
+FROM n8nio/n8n:latest
+
+# Instalar nodos personalizados si es necesario
+# RUN npm install n8n-nodes-custom
+
+# Configurar permisos
+USER node
+
+# Exponer puerto
+EXPOSE 5678
+
+# Comando de inicio
+CMD ["n8n", "start"]</code>
+                </div>
+
+                <p>Archivo <code>.env.example</code>:</p>
+                
+                <div class="code-block">
+<code># Copiar a .env y completar valores
+N8N_HOST=tu-dominio.com
+WEBHOOK_URL=https://tu-dominio.com/
+N8N_BASIC_AUTH_USER=admin
+N8N_BASIC_AUTH_PASSWORD=cambiar-esto
+DB_POSTGRESDB_HOST=tu-host.supabase.com
+DB_POSTGRESDB_USER=postgres.ref
+DB_POSTGRESDB_PASSWORD=tu-contraseña</code>
+                </div>
+            </div>
+
+            <div class="success-box">
+                <strong>✅ Verificación:</strong> Después del despliegue, accede a <code>https://tu-servicio.onrender.com</code> para verificar que n8n está funcionando.
+            </div>
+        </div>
+
+        <!-- Base de Datos -->
+        <div class="section" id="base-datos">
+            <h2 class="section-title">6. Configuración de Base de Datos</h2>
+            
+            <div class="card">
+                <h3>Configurar PostgreSQL en Supabase</h3>
+                
+                <div class="step-title">
+                    <span class="step-number">8</span>
+                    Obtener credenciales de Supabase
+                </div>
+                
+                <ol style="margin-left: 1.5rem;">
+                    <li>Ve a tu proyecto en Supabase</li>
+                    <li>Settings > Database</li>
+                    <li>Copia la "Connection string" (URI)</li>
+                    <li>Usa el puerto 6543 para conexiones pooler (recomendado)</li>
+                </ol>
+
+                <div class="code-block">
+<code># Connection string de Supabase
+# Formato:
+postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+
+# Ejemplo:
+postgresql://postgres.abc123:MiPassword123@aws-0-us-east-1.pooler.supabase.com:6543/postgres
+
+# Variables para Render:
+DB_POSTGRESDB_HOST=aws-0-us-east-1.pooler.supabase.com
+DB_POSTGRESDB_PORT=6543
+DB_POSTGRESDB_DATABASE=postgres
+DB_POSTGRESDB_USER=postgres.abc123
+DB_POSTGRESDB_PASSWORD=MiPassword123</code>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Crear tablas para n8n (Opcional)</h3>
+                
+                <p>Si necesitas tablas personalizadas para tus workflows:</p>
+                
+                <div class="code-block">
+<code>-- Ejecutar en Supabase SQL Editor
+
+-- Tabla para logs de workflows
+CREATE TABLE workflow_logs (
+    id SERIAL PRIMARY KEY,
+    workflow_id VARCHAR(255),
+    execution_id VARCHAR(255),
+    status VARCHAR(50),
+    created_at TIMESTAMP DEFAULT NOW(),
+    data JSONB
+);
+
+-- Tabla para configuraciones de clientes
+CREATE TABLE client_configs (
+    id SERIAL PRIMARY KEY,
+    client_name VARCHAR(255),
+    webhook_url VARCHAR(500),
+    api_key VARCHAR(255),
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Índices para mejor rendimiento
+CREATE INDEX idx_workflow_logs_workflow ON workflow_logs(workflow_id);
+CREATE INDEX idx_workflow_logs_status ON workflow_logs(status);</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dominio -->
+        <div class="section" id="dominio">
+            <h2 class="section-title">7. Dominio Personalizado y SSL</h2>
+            
+            <div class="card">
+                <div class="step-title">
+                    <span class="step-number">9</span>
+                    Configurar dominio personalizado
+                </div>
+                
+                <ol style="margin-left: 1.5rem;">
+                    <li>En Render, ve a tu servicio n8n</li>
+                    <li>Settings > Custom Domain</li>
+                    <li>Agrega tu dominio (ej: n8n.tuempresa.com)</li>
+                    <li>Configura los DNS según las instrucciones:</li>
+                </ol>
+
+                <div class="code-block">
+<code># Configuración DNS (ejemplo con Cloudflare)
+
+Tipo: CNAME
+Nombre: n8n
+Contenido: tu-servicio.onrender.com
+Proxy: Activado (para SSL automático)
+
+# O con tu proveedor de dominios:
+Tipo: CNAME
+Host: n8n
+Valor: tu-servicio.onrender.com
+TTL: 3600</code>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ SSL Automático:</strong> Render proporciona certificados SSL gratuitos automáticamente con Let's Encrypt.
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflows -->
+        <div class="section" id="workflows">
+            <h2 class="section-title">8. Creación de Workflows</h2>
+            
+            <div class="card">
+                <h3>Workflows Iniciales Recomendados</h3>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <strong>📧 Email Automation</strong><br>
+                        Respuestas automáticas, newsletters
+                    </div>
+                    <div class="feature-item">
+                        <strong>📱 WhatsApp Bot</strong><br>
+                        Atención al cliente automatizada
+                    </div>
+                    <div class="feature-item">
+                        <strong>📊 Sync Data</strong><br>
+                        Sincronización entre sistemas
+                    </div>
+                    <div class="feature-item">
+                        <strong>🔔 Alertas</strong><br>
+                        Monitoreo y notificaciones
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Ejemplo: Workflow de Bienvenida</h3>
+                
+                <div class="code-block">
+<code>{
+  "name": "Cliente - Bienvenida",
+  "nodes": [
+    {
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cliente-nuevo"
+      }
+    },
+    {
+      "name": "Enviar Email",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [450, 300],
+      "parameters": {
+        "fromEmail": "noreply@tuempresa.com",
+        "toEmail": "={{$json.email}}",
+        "subject": "¡Bienvenido!",
+        "text": "Hola {{$json.nombre}}, gracias por unirte..."
+      }
+    },
+    {
+      "name": "Registrar en BD",
+      "type": "n8n-nodes-base.postgres",
+      "position": [650, 300],
+      "parameters": {
+        "operation": "insert",
+        "table": "clientes"
+      }
+    }
+  ]
+}</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitoreo -->
+        <div class="section" id="monitoreo">
+            <h2 class="section-title">9. Monitoreo y Mantenimiento</h2>
+            
+            <div class="card">
+                <h3>📊 Métricas a Monitorear</h3>
+                
+                <ul>
+                    <li>✅ Uso de CPU y memoria</li>
+                    <li>✅ Tiempo de respuesta de webhooks</li>
+                    <li>✅ Errores en ejecuciones</li>
+                    <li>✅ Conexiones a base de datos</li>
+                    <li>✅ Almacenamiento utilizado</li>
+                </ul>
+
+                <div class="code-block">
+<code># Configurar alertas en Render
+# Settings > Notifications
+
+# Alertas recomendadas:
+- CPU > 80% por 5 minutos
+- Memory > 85% por 5 minutos
+- Service unhealthy
+- Deploy failed</code>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🔄 Backups Automáticos</h3>
+                
+                <div class="code-block">
+<code># Script de backup (ejecutar en cron)
+
+#!/bin/bash
+# backup-n8n.sh
+
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/backups/n8n"
+
+# Exportar workflows
+curl -X GET "https://tu-n8n.onrender.com/api/v1/workflows" \
+  -H "X-N8N-API-KEY: tu-api-key" \
+  -o "$BACKUP_DIR/workflows_$DATE.json"
+
+# Backup de base de datos (Supabase)
+pg_dump $DATABASE_URL > "$BACKUP_DIR/db_$DATE.sql"
+
+# Limpiar backups antiguos (más de 30 días)
+find $BACKUP_DIR -type f -mtime +30 -delete</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Escalado -->
+        <div class="section" id="escalado">
+            <h2 class="section-title">10. Escalado y Optimización</h2>
+            
+            <div class="card">
+                <h3>📈 Planes de Escalado</h3>
+                
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--primary); color: white;">
+                            <th style="padding: 1rem; text-align: left;">Fase</th>
+                            <th style="padding: 1rem; text-align: left;">Plan</th>
+                            <th style="padding: 1rem; text-align: left;">Costo</th>
+                            <th style="padding: 1rem; text-align: left;">Especificaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Inicio</td>
+                            <td style="padding: 1rem;">Free</td>
+                            <td style="padding: 1rem; color: var(--success);">$0/mes</td>
+                            <td style="padding: 1rem;">512MB RAM, se suspende</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Producción</td>
+                            <td style="padding: 1rem;">Starter</td>
+                            <td style="padding: 1rem; color: var(--success);">$7/mes</td>
+                            <td style="padding: 1rem;">512MB RAM, siempre activo</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <td style="padding: 1rem;">Crecimiento</td>
+                            <td style="padding: 1rem;">Standard</td>
+                            <td style="padding: 1rem; color: var(--success);">$25/mes</td>
+                            <td style="padding: 1rem;">2GB RAM, mejor rendimiento</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 1rem;">Enterprise</td>
+                            <td style="padding: 1rem;">Pro</td>
+                            <td style="padding: 1rem; color: var(--success);">$85/mes</td>
+                            <td style="padding: 1rem;">4GB RAM, múltiples instancias</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>⚡ Optimizaciones de Rendimiento</h3>
+                
+                <div class="code-block">
+<code># Variables de entorno para optimización
+
+# Aumentar timeout para workflows largos
+N8N_DEFAULT_TIMEOUT=300000
+
+# Habilitar queue para alta demanda
+QUEUE_BULL_REDIS_HOST=redis-host
+QUEUE_BULL_REDIS_PORT=6379
+
+# Configurar workers
+EXECUTIONS_MODE=queue
+EXECUTIONS_WORKERS=3
+
+# Cache de nodos
+N8N_CACHE_ENABLED=true
+N8N_CACHE_TTL=3600</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Costos -->
+        <div class="section" id="costos">
+            <h2 class="section-title">11. Análisis de Costos</h2>
+            
+            <div class="card">
+                <h3>💰 Costos Estimados por Fase</h3>
+                
+                <div class="feature-grid">
+                    <div class="feature-item" style="background: rgba(16, 185, 129, 0.1); border-left-color: var(--success);">
+                        <strong>🚀 Fase Inicial</strong><br>
+                        <span style="font-size: 2rem; color: var(--success);">$0/mes</span><br>
+                        Render Free + Supabase Free
+                    </div>
+                    <div class="feature-item" style="background: rgba(59, 130, 246, 0.1); border-left-color: var(--accent);">
+                        <strong>📈 Fase Producción</strong><br>
+                        <span style="font-size: 2rem; color: var(--accent);">$7/mes</span><br>
+                        Render Starter + Supabase Free
+                    </div>
+                    <div class="feature-item" style="background: rgba(124, 58, 237, 0.1); border-left-color: var(--secondary);">
+                        <strong>🏢 Fase Crecimiento</strong><br>
+                        <span style="font-size: 2rem; color: var(--secondary);">$32/mes</span><br>
+                        Render Standard + Supabase Pro
+                    </div>
+                </div>
+
+                <div class="code-block">
+<code># Desglose de costos mensuales
+
+## Fase Producción ($7/mes)
+- Render Starter: $7
+- Supabase Free: $0
+- Dominio: ~$1 (anualizado)
+- Total: $8/mes
+
+## Fase Crecimiento ($32/mes)
+- Render Standard: $25
+- Supabase Pro: $25
+- Dominio: ~$1 (anualizado)
+- Total: $51/mes
+
+## ROI Estimado
+- 5 clientes a $50/mes = $250/mes
+- Margen: $250 - $51 = $199/mes
+- ROI: ~390%</code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mejores Prácticas -->
+        <div class="section" id="mejores-practicas">
+            <h2 class="section-title">12. Mejores Prácticas</h2>
+            
+            <div class="card">
+                <h3>✅ Checklist de Producción</h3>
+                
+                <ul style="list-style: none;">
+                    <li style="padding: 0.5rem 0;">☑️ Autenticación básica habilitada</li>
+                    <li style="padding: 0.5rem 0;">☑️ SSL/HTTPS configurado</li>
+                    <li style="padding: 0.5rem 0;">☑️ Base de datos externa (Supabase)</li>
+                    <li style="padding: 0.5rem 0;">☑️ Backups automáticos configurados</li>
+                    <li style="padding: 0.5rem 0;">☑️ Monitoreo y alertas activos</li>
+                    <li style="padding: 0.5rem 0;">☑️ Variables de entorno seguras</li>
+                    <li style="padding: 0.5rem 0;">☑️ Dominio personalizado</li>
+                    <li style="padding: 0.5rem 0;">☑️ Rate limiting configurado</li>
+                    <li style="padding: 0.5rem 0;">☑️ Logs centralizados</li>
+                    <li style="padding: 0.5rem 0;">☑️ Documentación de workflows</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>🔒 Seguridad</h3>
+                
+                <div class="warning-box">
+                    <strong>⚠️ Nunca hagas esto:</strong>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>❌ Usar contraseñas débiles</li>
+                        <li>❌ Exponer API keys en código</li>
+                        <li>❌ Desactivar autenticación</li>
+                        <li>❌ Ignorar actualizaciones de seguridad</li>
+                    </ul>
+                </div>
+
+                <div class="success-box">
+                    <strong>✅ Siempre haz esto:</strong>
+                    <ul style="margin-top: 0.5rem;">
+                        <li>✅ Usar variables de entorno</li>
+                        <li>✅ Rotar credenciales regularmente</li>
+                        <li>✅ Limitar acceso por IP si es posible</li>
+                        <li>✅ Mantener n8n actualizado</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="background: linear-gradient(135deg, var(--success), var(--primary)); color: white;">
+                <h2>🎉 ¡Listo para Comenzar!</h2>
+                <p style="margin-top: 1rem;">Con esta guía tienes todo lo necesario para desplegar n8n en Render y comenzar a ofrecer servicios de automatización a tus clientes.</p>
+                <p style="margin-top: 1rem;"><strong>Próximos pasos:</strong></p>
+                <ol style="margin-left: 1.5rem;">
+                    <li>Crear cuenta en Render y Supabase</li>
+                    <li>Configurar el servicio web</li>
+                    <li>Desplegar n8n</li>
+                    <li>Crear tus primeros workflows</li>
+                    <li>¡Empezar a facturar clientes!</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

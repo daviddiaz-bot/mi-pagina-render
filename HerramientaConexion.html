@@ -7,6 +7,39 @@
     <meta name="description" content="Herramienta web para consultar conexiones entrantes y salientes de servidores y exportar resultados." />
     <link rel="icon" href="/favicon.ico" />
     <link rel="stylesheet" href="./src/style.css" />
+    <style>
+      /* Back to Home Button */
+      .back-home {
+        position: fixed;
+        bottom: 2rem;
+        left: 2rem;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        text-decoration: none;
+        color: white;
+        font-size: 1.5rem;
+      }
+
+      .back-home.visible {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .back-home:hover {
+        transform: translateY(-5px);
+      }
+    </style>
     <script defer src="./src/main.js"></script>
   </head>
   <body>
@@ -95,5 +128,21 @@
         </div>
       </section>
     </div>
+
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-home" id="backHome" title="Volver al Inicio">🏠</a>
+
+    <script>
+      // Back to home button
+      const backHomeBtn = document.getElementById('backHome');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+          backHomeBtn.classList.add('visible');
+        } else {
+          backHomeBtn.classList.remove('visible');
+        }
+      });
+    </script>
   </body>
 </html>

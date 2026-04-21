@@ -991,6 +991,38 @@
             transform: translateY(-5px);
         }
 
+        /* Back to Home Button */
+        .back-home {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .back-home.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-home:hover {
+            transform: translateY(-5px);
+        }
+
         /* Search Box */
         .search-box {
             position: relative;
@@ -2892,6 +2924,11 @@ docker-compose up -d</code></div>
         ↑
     </div>
 
+    <!-- Back to Home Button -->
+    <a href="index.html" class="back-home" id="backHome" title="Volver al Inicio">
+        🏠
+    </a>
+
     <script>
         // Tab functionality
         function switchTab(tabId) {
@@ -2977,11 +3014,15 @@ docker-compose up -d</code></div>
         window.addEventListener('scroll', () => {
             if (window.scrollY > 500) {
                 scrollTopBtn.classList.add('visible');
+                backHomeBtn.classList.add('visible');
             } else {
                 scrollTopBtn.classList.remove('visible');
+                backHomeBtn.classList.remove('visible');
             }
         });
 
+        const backHomeBtn = document.getElementById('backHome');
+        
         scrollTopBtn.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,

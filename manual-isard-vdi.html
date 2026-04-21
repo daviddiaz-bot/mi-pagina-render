@@ -1,0 +1,3053 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Implementación - Isard VDI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --sidebar-bg: #1e293b;
+            --text: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            --gradient-hover: linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.08) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .nav-link.external {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .nav-link.external:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            max-width: 1600px;
+            margin: 0 auto;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            transform: translateX(5px);
+        }
+
+        .sidebar-link.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .sidebar-link-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .sidebar-submenu {
+            margin-left: 2.5rem;
+            margin-top: 0.5rem;
+            list-style: none;
+        }
+
+        .sidebar-submenu li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-submenu .sidebar-link {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: calc(100% - 280px);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--gradient);
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 100px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card h3 {
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card h4 {
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .card ul, .card ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .card li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-card h4 {
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: attr(data-language);
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .code-block code {
+            display: block;
+            white-space: pre;
+        }
+
+        .code-inline {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--accent);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: #ff7b72; }
+        .string { color: #a5d6ff; }
+        .comment { color: #8b949e; font-style: italic; }
+        .function { color: #d2a8ff; }
+        .variable { color: #79c0ff; }
+        .number { color: #79c0ff; }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .alert-info {
+            background: rgba(6, 182, 212, 0.1);
+            border-color: var(--info);
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert p {
+            margin: 0;
+            color: var(--text-secondary);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Accordion */
+        .accordion {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .accordion-item {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--card-bg);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 1000px;
+        }
+
+        .accordion-body {
+            padding: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Steps */
+        .steps {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            left: 0.5rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gradient);
+        }
+
+        .step {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 2rem;
+        }
+
+        .step::before {
+            content: attr(data-step);
+            position: absolute;
+            left: -2.5rem;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: white;
+            box-shadow: 0 0 0 4px var(--bg);
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .step-content {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 1.5rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Tags */
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--accent);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin: 0.25rem;
+        }
+
+        .tag-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .tag-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .tag-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        /* Diagrams */
+        .diagram {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .diagram-box {
+            display: inline-block;
+            padding: 1rem 1.5rem;
+            background: var(--gradient);
+            border-radius: 8px;
+            margin: 0.5rem;
+            font-weight: 600;
+        }
+
+        .diagram-arrow {
+            display: inline-block;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .sidebar {
+                width: 240px;
+            }
+            .content {
+                padding: 2rem 3rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .content {
+                padding: 2rem;
+                max-width: 100%;
+            }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .nav-links {
+                justify-content: center;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .grid-3, .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Highlight */
+        .highlight {
+            background: rgba(37, 99, 235, 0.2);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.5rem 1rem;
+            background: var(--card-bg);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            border: 1px solid var(--border-color);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .status-success::before {
+            background: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .status-warning::before {
+            background: var(--warning);
+        }
+
+        .status-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .status-danger::before {
+            background: var(--danger);
+        }
+
+        .status-info {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--info);
+        }
+
+        .status-info::before {
+            background: var(--info);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">🖥️</div>
+                <span>Isard VDI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#introduccion" class="nav-link">Introducción</a>
+                <a href="#requisitos" class="nav-link">Requisitos</a>
+                <a href="#instalacion" class="nav-link">Instalación</a>
+                <a href="#configuracion" class="nav-link">Configuración</a>
+                <a href="#hipervisores" class="nav-link">Hipervisores</a>
+                <a href="#plantillas" class="nav-link">Plantillas</a>
+                <a href="#usuarios" class="nav-link">Usuarios</a>
+                <a href="#api" class="nav-link">API</a>
+                <a href="#troubleshooting" class="nav-link">Troubleshooting</a>
+                <a href="https://isard.gitlab.io/isardvdi-docs/es/" target="_blank" class="nav-link external">📚 Docs Oficiales</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-title">Contenido</div>
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="#introduccion" class="sidebar-link active">
+                        <span class="sidebar-link-icon">📖</span>
+                        Introducción
+                    </a>
+                </li>
+                <li>
+                    <a href="#requisitos" class="sidebar-link">
+                        <span class="sidebar-link-icon">⚙️</span>
+                        Requisitos
+                    </a>
+                </li>
+                <li>
+                    <a href="#instalacion" class="sidebar-link">
+                        <span class="sidebar-link-icon">🚀</span>
+                        Instalación
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="#instalacion-docker" class="sidebar-link">Docker</a></li>
+                        <li><a href="#instalacion-compose" class="sidebar-link">Docker Compose</a></li>
+                        <li><a href="#instalacion-kubernetes" class="sidebar-link">Kubernetes</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#configuracion" class="sidebar-link">
+                        <span class="sidebar-link-icon">🔧</span>
+                        Configuración
+                    </a>
+                </li>
+                <li>
+                    <a href="#hipervisores" class="sidebar-link">
+                        <span class="sidebar-link-icon">🏗️</span>
+                        Hipervisores
+                    </a>
+                </li>
+                <li>
+                    <a href="#plantillas" class="sidebar-link">
+                        <span class="sidebar-link-icon">📦</span>
+                        Plantillas
+                    </a>
+                </li>
+                <li>
+                    <a href="#usuarios" class="sidebar-link">
+                        <span class="sidebar-link-icon">👥</span>
+                        Usuarios
+                    </a>
+                </li>
+                <li>
+                    <a href="#api" class="sidebar-link">
+                        <span class="sidebar-link-icon">🔌</span>
+                        API
+                    </a>
+                </li>
+                <li>
+                    <a href="#troubleshooting" class="sidebar-link">
+                        <span class="sidebar-link-icon">🔍</span>
+                        Troubleshooting
+                    </a>
+                </li>
+                <li>
+                    <a href="#faq" class="sidebar-link">
+                        <span class="sidebar-link-icon">❓</span>
+                        FAQ
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Manual de Implementación Isard VDI</h1>
+                    <p class="hero-subtitle">Guía completa para desplegar y configurar Isard VDI, la solución de escritorio virtual de código abierto para entornos educativos y empresariales.</p>
+                    <div class="hero-badges">
+                        <span class="badge">🔓 Open Source</span>
+                        <span class="badge">🐳 Docker Ready</span>
+                        <span class="badge">☸️ Kubernetes</span>
+                        <span class="badge">🎓 Educación</span>
+                        <span class="badge">🏢 Empresarial</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Search Box -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar en el manual..." id="searchInput">
+            </div>
+
+            <!-- Introducción -->
+            <section id="introduccion" class="section">
+                <div class="section-header">
+                    <div class="section-icon">📖</div>
+                    <div>
+                        <h2 class="section-title">Introducción</h2>
+                        <p class="section-subtitle">¿Qué es Isard VDI y por qué usarlo?</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>¿Qué es Isard VDI?</h3>
+                    <p>Isard VDI es una solución de escritorio virtual (VDI - Virtual Desktop Infrastructure) de código abierto diseñada para proporcionar entornos de escritorio virtuales a usuarios finales. Es especialmente adecuada para entornos educativos, aunque también puede utilizarse en entornos empresariales.</p>
+                    
+                    <div class="alert alert-info">
+                        <span class="alert-icon">ℹ️</span>
+                        <div>
+                            <div class="alert-title">Información Importante</div>
+                            <p>Isard VDI permite gestionar múltiples escritorios virtuales desde una interfaz web centralizada, facilitando la administración y el acceso a recursos informáticos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎓</div>
+                        <h4>Entorno Educativo</h4>
+                        <p>Ideal para aulas de informática, laboratorios y centros educativos que necesitan gestionar múltiples escritorios.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔓</div>
+                        <h4>Código Abierto</h4>
+                        <p>Totalmente open source bajo licencia AGPL-3.0, permitiendo personalización y adaptación a necesidades específicas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h4>Acceso Web</h4>
+                        <p>Acceso a escritorios virtuales desde cualquier navegador web, sin necesidad de clientes adicionales.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Características Principales</h3>
+                    <ul>
+                        <li><strong>Gestión Centralizada:</strong> Panel de administración web para gestionar usuarios, escritorios y recursos.</li>
+                        <li><strong>Múltiples Hipervisores:</strong> Soporte para KVM, VMware, VirtualBox y más.</li>
+                        <li><strong>Plantillas:</strong> Creación y gestión de plantillas de escritorio para despliegues rápidos.</li>
+                        <li><strong>Autenticación Flexible:</strong> Integración con LDAP, Active Directory y otros sistemas de autenticación.</li>
+                        <li><strong>API REST:</strong> API completa para integración con sistemas externos.</li>
+                        <li><strong>Despliegue Flexible:</strong> Soporte para Docker, Docker Compose y Kubernetes.</li>
+                    </ul>
+                </div>
+
+                <div class="diagram">
+                    <h4>Arquitectura de Isard VDI</h4>
+                    <div style="margin-top: 1.5rem;">
+                        <div class="diagram-box">Usuario</div>
+                        <span class="diagram-arrow">→</span>
+                        <div class="diagram-box">Navegador Web</div>
+                        <span class="diagram-arrow">→</span>
+                        <div class="diagram-box">Isard VDI</div>
+                        <span class="diagram-arrow">→</span>
+                        <div class="diagram-box">Hipervisor</div>
+                        <span class="diagram-arrow">→</span>
+                        <div class="diagram-box">Escritorio Virtual</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Requisitos -->
+            <section id="requisitos" class="section">
+                <div class="section-header">
+                    <div class="section-icon">⚙️</div>
+                    <div>
+                        <h2 class="section-title">Requisitos del Sistema</h2>
+                        <p class="section-subtitle">Recursos necesarios para desplegar Isard VDI</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Requisitos Mínimos</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Componente</th>
+                                    <th>Mínimo</th>
+                                    <th>Recomendado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>CPU</td>
+                                    <td>4 núcleos</td>
+                                    <td>8+ núcleos</td>
+                                </tr>
+                                <tr>
+                                    <td>RAM</td>
+                                    <td>8 GB</td>
+                                    <td>16+ GB</td>
+                                </tr>
+                                <tr>
+                                    <td>Almacenamiento</td>
+                                    <td>100 GB SSD</td>
+                                    <td>500+ GB SSD/NVMe</td>
+                                </tr>
+                                <tr>
+                                    <td>Red</td>
+                                    <td>1 Gbps</td>
+                                    <td>10 Gbps</td>
+                                </tr>
+                                <tr>
+                                    <td>Sistema Operativo</td>
+                                    <td>Ubuntu 20.04+</td>
+                                    <td>Ubuntu 22.04 LTS / Debian 11+</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Requisitos de Software</h3>
+                    <div class="grid-2">
+                        <div>
+                            <h4>Para despliegue con Docker</h4>
+                            <ul>
+                                <li>Docker Engine 20.10+</li>
+                                <li>Docker Compose 2.0+</li>
+                                <li>Git (para clonar el repositorio)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Para despliegue con Kubernetes</h4>
+                            <ul>
+                                <li>Kubernetes 1.20+</li>
+                                <li>Helm 3.0+</li>
+                                <li>kubectl configurado</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Requisitos de Red</h3>
+                    <div class="alert alert-warning">
+                        <span class="alert-icon">⚠️</span>
+                        <div>
+                            <div class="alert-title">Consideraciones de Red</div>
+                            <p>Asegúrese de que los siguientes puertos estén disponibles y configurados correctamente en su firewall.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Puerto</th>
+                                    <th>Protocolo</th>
+                                    <th>Uso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>80</td>
+                                    <td>TCP</td>
+                                    <td>HTTP (redirección a HTTPS)</td>
+                                </tr>
+                                <tr>
+                                    <td>443</td>
+                                    <td>TCP</td>
+                                    <td>HTTPS (interfaz web y WebSocket)</td>
+                                </tr>
+                                <tr>
+                                    <td>5900-6000</td>
+                                    <td>TCP</td>
+                                    <td>VNC (acceso a escritorios)</td>
+                                </tr>
+                                <tr>
+                                    <td>16514</td>
+                                    <td>TCP</td>
+                                    <td>Libvirt (si se usa KVM)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Requisitos por Usuario</h3>
+                    <p>Para planificar la capacidad de su despliegue, considere los siguientes recursos por usuario activo:</p>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>CPU por usuario</span>
+                            <span>1-2 vCPU</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>RAM por usuario</span>
+                            <span>2-4 GB</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Almacenamiento por usuario</span>
+                            <span>20-50 GB</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instalación -->
+            <section id="instalacion" class="section">
+                <div class="section-header">
+                    <div class="section-icon">🚀</div>
+                    <div>
+                        <h2 class="section-title">Instalación</h2>
+                        <p class="section-subtitle">Guía paso a paso para desplegar Isard VDI</p>
+                    </div>
+                </div>
+
+                <!-- Tabs para diferentes métodos de instalación -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="docker">Docker</button>
+                    <button class="tab" data-tab="compose">Docker Compose</button>
+                    <button class="tab" data-tab="kubernetes">Kubernetes</button>
+                </div>
+
+                <!-- Docker Tab -->
+                <div id="docker" class="tab-content active">
+                    <div class="card">
+                        <h3>Instalación con Docker</h3>
+                        <p>El método más rápido para desplegar Isard VDI es usando Docker directamente.</p>
+                        
+                        <div class="steps">
+                            <div class="step" data-step="1">
+                                <div class="step-title">Instalar Docker</div>
+                                <div class="step-content">
+                                    <p>Primero, asegúrese de tener Docker instalado en su sistema:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Actualizar el sistema</span>
+sudo apt update && sudo apt upgrade -y
+
+<span class="comment"># Instalar dependencias</span>
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+<span class="comment"># Añadir la clave GPG de Docker</span>
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+<span class="comment"># Añadir el repositorio de Docker</span>
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+<span class="comment"># Instalar Docker</span>
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+<span class="comment"># Añadir usuario al grupo docker</span>
+sudo usermod -aG docker $USER
+
+<span class="comment"># Verificar instalación</span>
+docker --version</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="2">
+                                <div class="step-title">Clonar el Repositorio</div>
+                                <div class="step-content">
+                                    <p>Clone el repositorio oficial de Isard VDI:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Clonar el repositorio</span>
+git clone https://gitlab.com/isard/isardvdi.git
+cd isardvdi</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="3">
+                                <div class="step-title">Configurar Variables de Entorno</div>
+                                <div class="step-content">
+                                    <p>Cree y configure el archivo de variables de entorno:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Copiar el archivo de ejemplo</span>
+cp .env.example .env
+
+<span class="comment"># Editar el archivo con su editor preferido</span>
+nano .env</code></div>
+                                    
+                                    <p>Configure las siguientes variables importantes:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Dominio de la aplicación</span>
+DOMAIN=isardvmi.tu-dominio.com
+
+<span class="comment"># Configuración de correo</span>
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=tu-email@gmail.com
+SMTP_PASSWORD=tu-contraseña
+
+<span class="comment"># Configuración de base de datos</span>
+DB_HOST=postgres
+DB_NAME=isardvdi
+DB_USER=isardvdi
+DB_PASSWORD=tu-contraseña-segura
+
+<span class="comment"># Secret key para Django</span>
+SECRET_KEY=genera-una-clave-segura-aqui</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="4">
+                                <div class="step-title">Iniciar los Contenedores</div>
+                                <div class="step-content">
+                                    <p>Inicie todos los servicios de Isard VDI:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Construir e iniciar los contenedores</span>
+docker-compose up -d
+
+<span class="comment"># Verificar el estado de los contenedores</span>
+docker-compose ps
+
+<span class="comment"># Ver los logs</span>
+docker-compose logs -f</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="5">
+                                <div class="step-title">Acceder a Isard VDI</div>
+                                <div class="step-content">
+                                    <p>Una vez iniciados los contenedores, acceda a Isard VDI:</p>
+                                    <ul>
+                                        <li><strong>URL:</strong> <code class="code-inline">https://isardvmi.tu-dominio.com</code></li>
+                                        <li><strong>Usuario admin:</strong> <code class="code-inline">admin</code></li>
+                                        <li><strong>Contraseña admin:</strong> <code class="code-inline">IsardVDI</code> (cámbiela inmediatamente)</li>
+                                    </ul>
+                                    
+                                    <div class="alert alert-success">
+                                        <span class="alert-icon">✅</span>
+                                        <div>
+                                            <div class="alert-title">¡Instalación Completada!</div>
+                                            <p>Isard VDI está ahora listo para usar. Acceda a la interfaz web y comience a configurar su entorno VDI.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Docker Compose Tab -->
+                <div id="compose" class="tab-content">
+                    <div class="card">
+                        <h3>Instalación con Docker Compose</h3>
+                        <p>Para despliegues más complejos, Docker Compose ofrece mayor flexibilidad en la configuración.</p>
+                        
+                        <div class="steps">
+                            <div class="step" data-step="1">
+                                <div class="step-title">Instalar Docker Compose</div>
+                                <div class="step-content">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Descargar Docker Compose</span>
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+<span class="comment"># Dar permisos de ejecución</span>
+sudo chmod +x /usr/local/bin/docker-compose
+
+<span class="comment"># Verificar instalación</span>
+docker-compose --version</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="2">
+                                <div class="step-title">Crear docker-compose.yml</div>
+                                <div class="step-content">
+                                    <p>Cree un archivo <code class="code-inline">docker-compose.yml</code> personalizado:</p>
+                                    <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">version:</span> <span class="string">'3.8'</span>
+
+<span class="keyword">services:</span>
+  <span class="keyword">isardvdi:</span>
+    <span class="keyword">image:</span> isard/isardvdi:latest
+    <span class="keyword">container_name:</span> isardvdi
+    <span class="keyword">restart:</span> unless-stopped
+    <span class="keyword">ports:</span>
+      - <span class="string">"80:80"</span>
+      - <span class="string">"443:443"</span>
+    <span class="keyword">volumes:</span>
+      - <span class="string">./data:/data</span>
+      - <span class="string">./media:/media</span>
+    <span class="keyword">environment:</span>
+      - <span class="string">DOMAIN=isardvdi.local</span>
+      - <span class="string">SECRET_KEY=your-secret-key-here</span>
+    <span class="keyword">depends_on:</span>
+      - <span class="string">postgres</span>
+      - <span class="string">redis</span>
+
+  <span class="keyword">postgres:</span>
+    <span class="keyword">image:</span> postgres:14
+    <span class="keyword">container_name:</span> isardvdi-postgres
+    <span class="keyword">restart:</span> unless-stopped
+    <span class="keyword">volumes:</span>
+      - <span class="string">./postgres-data:/var/lib/postgresql/data</span>
+    <span class="keyword">environment:</span>
+      - <span class="string">POSTGRES_DB=isardvdi</span>
+      - <span class="string">POSTGRES_USER=isardvdi</span>
+      - <span class="string">POSTGRES_PASSWORD=your-password</span>
+
+  <span class="keyword">redis:</span>
+    <span class="keyword">image:</span> redis:7-alpine
+    <span class="keyword">container_name:</span> isardvdi-redis
+    <span class="keyword">restart:</span> unless-stopped
+    <span class="keyword">volumes:</span>
+      - <span class="string">./redis-data:/data</span>
+
+<span class="keyword">volumes:</span>
+  <span class="keyword">postgres-data:</span>
+  <span class="keyword">redis-data:</span></code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="3">
+                                <div class="step-title">Iniciar Servicios</div>
+                                <div class="step-content">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Iniciar todos los servicios</span>
+docker-compose up -d
+
+<span class="comment"># Verificar estado</span>
+docker-compose ps
+
+<span class="comment"># Ver logs</span>
+docker-compose logs -f isardvdi</code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kubernetes Tab -->
+                <div id="kubernetes" class="tab-content">
+                    <div class="card">
+                        <h3>Instalación con Kubernetes</h3>
+                        <p>Para despliegues en producción a gran escala, Kubernetes es la opción recomendada.</p>
+                        
+                        <div class="steps">
+                            <div class="step" data-step="1">
+                                <div class="step-title">Instalar Helm</div>
+                                <div class="step-content">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Descargar e instalar Helm</span>
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+<span class="comment"># Verificar instalación</span>
+helm version</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="2">
+                                <div class="step-title">Añadir el Repositorio de Helm</div>
+                                <div class="step-content">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Añadir el repositorio de Isard VDI</span>
+helm repo add isardvdi https://isard.gitlab.io/isardvdi-charts
+
+<span class="comment"># Actualizar repositorios</span>
+helm repo update</code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="3">
+                                <div class="step-title">Crear values.yaml</div>
+                                <div class="step-content">
+                                    <p>Cree un archivo <code class="code-inline">values.yaml</code> con su configuración:</p>
+                                    <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">replicaCount:</span> <span class="number">2</span>
+
+<span class="keyword">image:</span>
+  <span class="keyword">repository:</span> isard/isardvdi
+  <span class="keyword">tag:</span> latest
+  <span class="keyword">pullPolicy:</span> Always
+
+<span class="keyword">service:</span>
+  <span class="keyword">type:</span> LoadBalancer
+  <span class="keyword">port:</span> <span class="number">443</span>
+
+<span class="keyword">ingress:</span>
+  <span class="keyword">enabled:</span> <span class="keyword">true</span>
+  <span class="keyword">className:</span> nginx
+  <span class="keyword">annotations:</span>
+    <span class="keyword">cert-manager.io/cluster-issuer:</span> letsencrypt-prod
+  <span class="keyword">hosts:</span>
+    - <span class="keyword">host:</span> isardvdi.example.com
+      <span class="keyword">paths:</span>
+        - <span class="keyword">path:</span> /
+          <span class="keyword">pathType:</span> Prefix
+  <span class="keyword">tls:</span>
+    - <span class="keyword">secretName:</span> isardvdi-tls
+      <span class="keyword">hosts:</span>
+        - isardvdi.example.com
+
+<span class="keyword">resources:</span>
+  <span class="keyword">limits:</span>
+    <span class="keyword">cpu:</span> <span class="string">"2000m"</span>
+    <span class="keyword">memory:</span> <span class="string">"4Gi"</span>
+  <span class="keyword">requests:</span>
+    <span class="keyword">cpu:</span> <span class="string">"500m"</span>
+    <span class="keyword">memory:</span> <span class="string">"1Gi"</span>
+
+<span class="keyword">postgresql:</span>
+  <span class="keyword">enabled:</span> <span class="keyword">true</span>
+  <span class="keyword">auth:</span>
+    <span class="keyword">password:</span> your-secure-password
+
+<span class="keyword">redis:</span>
+  <span class="keyword">enabled:</span> <span class="keyword">true</span></code></div>
+                                </div>
+                            </div>
+
+                            <div class="step" data-step="4">
+                                <div class="step-title">Desplegar con Helm</div>
+                                <div class="step-content">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Crear namespace</span>
+kubectl create namespace isardvdi
+
+<span class="comment"># Desplegar Isard VDI</span>
+helm install isardvdi isardvdi/isardvdi -n isardvdi -f values.yaml
+
+<span class="comment"># Verificar el despliegue</span>
+kubectl get pods -n isardvdi
+
+<span class="comment"># Ver logs</span>
+kubectl logs -n isardvdi -l app.kubernetes.io/name=isardvdi -f</code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuración -->
+            <section id="configuracion" class="section">
+                <div class="section-header">
+                    <div class="section-icon">🔧</div>
+                    <div>
+                        <h2 class="section-title">Configuración</h2>
+                        <p class="section-subtitle">Ajustes y personalización de Isard VDI</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configuración Inicial</h3>
+                    <p>Después de la instalación, realice la configuración inicial desde el panel de administración.</p>
+                    
+                    <div class="steps">
+                        <div class="step" data-step="1">
+                            <div class="step-title">Acceder al Panel de Administración</div>
+                            <div class="step-content">
+                                <p>Acceda a <code class="code-inline">https://tu-dominio/admin</code> con las credenciales de administrador.</p>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="2">
+                            <div class="step-title">Configurar Dominio y SSL</div>
+                            <div class="step-content">
+                                <p>Configure el dominio y los certificados SSL para conexiones seguras:</p>
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Usar Let's Encrypt para certificados SSL gratuitos</span>
+certbot --nginx -d isardvdi.tu-dominio.com</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="3">
+                            <div class="step-title">Configurar Correo Electrónico</div>
+                            <div class="step-content">
+                                <p>Configure el servidor SMTP para notificaciones:</p>
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Editar configuración de correo</span>
+nano /etc/isardvdi/settings.py
+
+<span class="comment"># Configurar SMTP</span>
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tu-email@gmail.com'
+EMAIL_HOST_PASSWORD = 'tu-contraseña'</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configuración de Almacenamiento</h3>
+                    <p>Configure los diferentes tipos de almacenamiento para escritorios y plantillas:</p>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <h4>Almacenamiento Local</h4>
+                            <p>Para despliegues pequeños, use almacenamiento local:</p>
+                            <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">storage:</span>
+  <span class="keyword">type:</span> local
+  <span class="keyword">path:</span> /var/lib/isardvdi/storage</code></div>
+                        </div>
+                        <div>
+                            <h4>Almacenamiento NFS</h4>
+                            <p>Para despliegues distribuidos, use NFS:</p>
+                            <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">storage:</span>
+  <span class="keyword">type:</span> nfs
+  <span class="keyword">server:</span> 192.168.1.100
+  <span class="keyword">path:</span> /export/isardvdi</code></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configuración de Rendimiento</h3>
+                    <p>Optimice el rendimiento según sus necesidades:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parámetro</th>
+                                    <th>Descripción</th>
+                                    <th>Valor Recomendado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>MAX_CONCURRENT_DESKTOPS</td>
+                                    <td>Máximo de escritorios concurrentes</td>
+                                    <td>50-100</td>
+                                </tr>
+                                <tr>
+                                    <td>DESKTOP_TIMEOUT</td>
+                                    <td>Timeout de inactividad (minutos)</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>ALLOWED_DOMAINS</td>
+                                    <td>Dominios permitidos para registro</td>
+                                    <td>tu-dominio.com</td>
+                                </tr>
+                                <tr>
+                                    <td>DESKTOP_DEFAULT_RAM</td>
+                                    <td>RAM por defecto (MB)</td>
+                                    <td>2048</td>
+                                </tr>
+                                <tr>
+                                    <td>DESKTOP_DEFAULT_VCPUS</td>
+                                    <td>vCPUs por defecto</td>
+                                    <td>2</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hipervisores -->
+            <section id="hipervisores" class="section">
+                <div class="section-header">
+                    <div class="section-icon">🏗️</div>
+                    <div>
+                        <h2 class="section-title">Configuración de Hipervisores</h2>
+                        <p class="section-subtitle">Integración con diferentes hipervisores</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Soporte de Hipervisores</h3>
+                    <p>Isard VDI soporta múltiples hipervisores para ejecutar las máquinas virtuales:</p>
+                    
+                    <div class="grid-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">🐧</div>
+                            <h4>KVM/QEMU</h4>
+                            <p>Hipervisor nativo de Linux, recomendado para máximo rendimiento.</p>
+                            <span class="tag tag-success">Recomendado</span>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🏢</div>
+                            <h4>VMware</h4>
+                            <p>Integración con VMware ESXi y vSphere para entornos empresariales.</p>
+                            <span class="tag">Empresarial</span>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📦</div>
+                            <h4>VirtualBox</h4>
+                            <p>Opción ligera para entornos de desarrollo y pruebas.</p>
+                            <span class="tag tag-warning">Desarrollo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configurar KVM</h3>
+                    <p>Para configurar KVM como hipervisor:</p>
+                    
+                    <div class="steps">
+                        <div class="step" data-step="1">
+                            <div class="step-title">Instalar KVM</div>
+                            <div class="step-content">
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Instalar paquetes KVM</span>
+sudo apt install -y qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst virt-manager
+
+<span class="comment"># Verificar soporte de virtualización</span>
+kvm-ok
+
+<span class="comment"># Añadir usuario al grupo libvirt</span>
+sudo usermod -aG libvirt $USER</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="2">
+                            <div class="step-title">Configurar Libvirt</div>
+                            <div class="step-content">
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Habilitar y iniciar libvirtd</span>
+sudo systemctl enable libvirtd
+sudo systemctl start libvirtd
+
+<span class="comment"># Configurar libvirt para escucha TCP</span>
+sudo nano /etc/libvirt/libvirtd.conf
+
+<span class="comment"># Añadir estas líneas:</span>
+listen_tls = 0
+listen_tcp = 1
+tcp_port = "16509"
+listen_addr = "0.0.0.0"
+auth_tcp = "none"</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="3">
+                            <div class="step-title">Configurar Isard VDI</div>
+                            <div class="step-content">
+                                <p>Configure Isard VDI para usar KVM:</p>
+                                <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">hypervisor:</span>
+  <span class="keyword">type:</span> kvm
+  <span class="keyword">connection:</span> qemu+tcp://localhost:16509/system
+  <span class="keyword">storage_pool:</span> default
+  <span class="keyword">network:</span> default</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configurar VMware</h3>
+                    <p>Para integrar con VMware ESXi:</p>
+                    
+                    <div class="code-block" data-language="yaml">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">hypervisor:</span>
+  <span class="keyword">type:</span> vmware
+  <span class="keyword">host:</span> esxi.example.com
+  <span class="keyword">port:</span> <span class="number">443</span>
+  <span class="keyword">username:</span> root
+  <span class="keyword">password:</span> your-password
+  <span class="keyword">datacenter:</span> ha-datacenter
+  <span class="keyword">datastore:</span> datastore1</code></div>
+                </div>
+            </section>
+
+            <!-- Plantillas -->
+            <section id="plantillas" class="section">
+                <div class="section-header">
+                    <div class="section-icon">📦</div>
+                    <div>
+                        <h2 class="section-title">Gestión de Plantillas</h2>
+                        <p class="section-subtitle">Creación y gestión de plantillas de escritorio</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>¿Qué son las Plantillas?</h3>
+                    <p>Las plantillas son imágenes base de escritorio virtual que se pueden clonar para crear nuevos escritorios de forma rápida y consistente.</p>
+                    
+                    <div class="alert alert-info">
+                        <span class="alert-icon">💡</span>
+                        <div>
+                            <div class="alert-title">Ventajas de usar Plantillas</div>
+                            <p>Las plantillas permiten desplegar escritorios en segundos, garantizando que todos los usuarios tengan el mismo entorno configurado.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Crear una Plantilla</h3>
+                    
+                    <div class="steps">
+                        <div class="step" data-step="1">
+                            <div class="step-title">Crear una Máquina Virtual Base</div>
+                            <div class="step-content">
+                                <p>Cree una VM con el sistema operativo deseado:</p>
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Crear VM con virt-install</span>
+virt-install \
+  --name template-ubuntu \
+  --ram 2048 \
+  --vcpus 2 \
+  --disk path=/var/lib/libvirt/images/template-ubuntu.qcow2,size=20 \
+  --cdrom /path/to/ubuntu-22.04.iso \
+  --network network=default \
+  --graphics spice</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="2">
+                            <div class="step-title">Instalar y Configurar el SO</div>
+                            <div class="step-content">
+                                <p>Instale el sistema operativo y configure:</p>
+                                <ul>
+                                    <li>Actualizaciones del sistema</li>
+                                    <li>Software necesario (oficina, navegadores, etc.)</li>
+                                    <li>Configuraciones de red</li>
+                                    <li>Agentes de Isard VDI</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="3">
+                            <div class="step-title">Sysprep (Windows) o Cloud-Init (Linux)</div>
+                            <div class="step-content">
+                                <p>Prepare la plantilla para clonación:</p>
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Para Linux - instalar cloud-init</span>
+sudo apt install cloud-init
+
+<span class="comment"># Limpiar máquina</span>
+sudo virt-sysprep -d template-ubuntu
+
+<span class="comment"># Apagar la VM</span>
+sudo virsh shutdown template-ubuntu</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="4">
+                            <div class="step-title">Importar en Isard VDI</div>
+                            <div class="step-content">
+                                <p>Importe la plantilla en Isard VDI:</p>
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Usar la API o interfaz web para importar</span>
+curl -X POST https://isardvdi.local/api/templates \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@/var/lib/libvirt/images/template-ubuntu.qcow2" \
+  -F "name=Ubuntu 22.04 Template" \
+  -F "description=Plantilla base de Ubuntu 22.04"</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Plantillas Recomendadas</h3>
+                    <div class="grid-2">
+                        <div>
+                            <h4>🎓 Educación</h4>
+                            <ul>
+                                <li>Windows 10/11 + Office 365</li>
+                                <li>Ubuntu 22.04 + LibreOffice</li>
+                                <li>Linux Mint + Software educativo</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>🏢 Empresarial</h4>
+                            <ul>
+                                <li>Windows 10 Enterprise + Office</li>
+                                <li>Ubuntu LTS + Herramientas de desarrollo</li>
+                                <li>CentOS/RHEL + Servicios corporativos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Usuarios -->
+            <section id="usuarios" class="section">
+                <div class="section-header">
+                    <div class="section-icon">👥</div>
+                    <div>
+                        <h2 class="section-title">Gestión de Usuarios</h2>
+                        <p class="section-subtitle">Autenticación y gestión de usuarios</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Métodos de Autenticación</h3>
+                    <p>Isard VDI soporta múltiples métodos de autenticación:</p>
+                    
+                    <div class="grid-3">
+                        <div class="feature-card">
+                            <div class="feature-icon">🔐</div>
+                            <h4>Local</h4>
+                            <p>Autenticación local con base de datos interna.</p>
+                            <span class="tag">Básico</span>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📚</div>
+                            <h4>LDAP</h4>
+                            <p>Integración con servidores LDAP/AD.</p>
+                            <span class="tag tag-success">Recomendado</span>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔑</div>
+                            <h4>OAuth2</h4>
+                            <p>Autenticación con proveedores OAuth2.</p>
+                            <span class="tag">Moderno</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Configurar LDAP/Active Directory</h3>
+                    
+                    <div class="steps">
+                        <div class="step" data-step="1">
+                            <div class="step-title">Configurar Conexión LDAP</div>
+                            <div class="step-content">
+                                <div class="code-block" data-language="python">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># settings.py</span>
+<span class="keyword">AUTHENTICATION_BACKENDS</span> = [
+    <span class="string">'django.contrib.auth.backends.ModelBackend'</span>,
+    <span class="string">'isardvdi.authentication.LDAPBackend'</span>,
+]
+
+<span class="keyword">LDAP_SERVER</span> = <span class="string">'ldap://ad.example.com'</span>
+<span class="keyword">LDAP_PORT</span> = <span class="number">389</span>
+<span class="keyword">LDAP_BASE_DN</span> = <span class="string">'DC=example,DC=com'</span>
+<span class="keyword">LDAP_USER_SEARCH</span> = <span class="string">'(sAMAccountName={username})'</span>
+<span class="keyword">LDAP_BIND_DN</span> = <span class="string">'CN=admin,DC=example,DC=com'</span>
+<span class="keyword">LDAP_BIND_PASSWORD</span> = <span class="string">'your-password'</span></code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="2">
+                            <div class="step-title">Mapeo de Atributos</div>
+                            <div class="step-content">
+                                <p>Configure el mapeo de atributos LDAP:</p>
+                                <div class="code-block" data-language="python">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">LDAP_USER_ATTRIBUTES</span> = {
+    <span class="string">'username'</span>: <span class="string">'sAMAccountName'</span>,
+    <span class="string">'email'</span>: <span class="string">'mail'</span>,
+    <span class="string">'first_name'</span>: <span class="string">'givenName'</span>,
+    <span class="string">'last_name'</span>: <span class="string">'sn'</span>,
+}
+
+<span class="keyword">LDAP_GROUP_MAPPING</span> = {
+    <span class="string">'isardvdi-admins'</span>: <span class="string">'admin'</span>,
+    <span class="string">'isardvdi-users'</span>: <span class="string">'user'</span>,
+}</code></div>
+                            </div>
+                        </div>
+
+                        <div class="step" data-step="3">
+                            <div class="step-title">Probar Conexión</div>
+                            <div class="step-content">
+                                <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Probar conexión LDAP</span>
+python manage.py test_ldap
+
+<span class="comment"># Sincronizar usuarios</span>
+python manage.py sync_ldap_users</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Gestión de Roles y Permisos</h3>
+                    <p>Isard VDI incluye un sistema de roles y permisos granular:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rol</th>
+                                    <th>Permisos</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Admin</td>
+                                    <td>Full Access</td>
+                                    <td>Acceso completo a todas las funciones</td>
+                                </tr>
+                                <tr>
+                                    <td>Manager</td>
+                                    <td>Manage Users, Desktops</td>
+                                    <td>Gestión de usuarios y escritorios</td>
+                                </tr>
+                                <tr>
+                                    <td>Teacher</td>
+                                    <td>View, Control Desktops</td>
+                                    <td>Ver y controlar escritorios de estudiantes</td>
+                                </tr>
+                                <tr>
+                                    <td>User</td>
+                                    <td>Use Desktop</td>
+                                    <td>Uso de escritorio asignado</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API -->
+            <section id="api" class="section">
+                <div class="section-header">
+                    <div class="section-icon">🔌</div>
+                    <div>
+                        <h2 class="section-title">API REST</h2>
+                        <p class="section-subtitle">Integración y automatización con la API</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Introducción a la API</h3>
+                    <p>Isard VDI expone una API REST completa para integración con sistemas externos y automatización de tareas.</p>
+                    
+                    <div class="alert alert-info">
+                        <span class="alert-icon">📚</span>
+                        <div>
+                            <div class="alert-title">Documentación de la API</div>
+                            <p>La documentación completa de la API está disponible en <code class="code-inline">https://tu-dominio/api/docs</code></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Autenticación</h3>
+                    <p>La API usa tokens JWT para autenticación:</p>
+                    
+                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Obtener token</span>
+curl -X POST https://isardvdi.local/api/auth/token \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "your-password"}'
+
+<span class="comment"># Respuesta</span>
+{
+  <span class="string">"access"</span>: <span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>,
+  <span class="string">"refresh"</span>: <span class="string">"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</span>
+}
+
+<span class="comment"># Usar token en solicitudes</span>
+curl -X GET https://isardvdi.local/api/desktops \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."</code></div>
+                </div>
+
+                <div class="card">
+                    <h3>Endpoints Principales</h3>
+                    
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Escritorios (Desktops)</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Listar escritorios</span>
+GET /api/desktops
+
+<span class="comment"># Obtener detalles de un escritorio</span>
+GET /api/desktops/{id}
+
+<span class="comment"># Crear escritorio</span>
+POST /api/desktops
+{
+  <span class="string">"name"</span>: <span class="string">"Mi Escritorio"</span>,
+  <span class="string">"template"</span>: <span class="string">"ubuntu-22.04"</span>,
+  <span class="string">"ram"</span>: <span class="number">2048</span>,
+  <span class="string">"vcpus"</span>: <span class="number">2</span>
+}
+
+<span class="comment"># Iniciar escritorio</span>
+POST /api/desktops/{id}/start
+
+<span class="comment"># Detener escritorio</span>
+POST /api/desktops/{id}/stop
+
+<span class="comment"># Eliminar escritorio</span>
+DELETE /api/desktops/{id}</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Plantillas (Templates)</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Listar plantillas</span>
+GET /api/templates
+
+<span class="comment"># Obtener detalles de plantilla</span>
+GET /api/templates/{id}
+
+<span class="comment"># Crear plantilla</span>
+POST /api/templates
+{
+  <span class="string">"name"</span>: <span class="string">"Ubuntu 22.04"</span>,
+  <span class="string">"description"</span>: <span class="string">"Plantilla base de Ubuntu"</span>,
+  <span class="string">"os"</span>: <span class="string">"linux"</span>
+}
+
+<span class="comment"># Actualizar plantilla</span>
+PUT /api/templates/{id}
+
+<span class="comment"># Eliminar plantilla</span>
+DELETE /api/templates/{id}</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Usuarios (Users)</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Listar usuarios</span>
+GET /api/users
+
+<span class="comment"># Obtener detalles de usuario</span>
+GET /api/users/{id}
+
+<span class="comment"># Crear usuario</span>
+POST /api/users
+{
+  <span class="string">"username"</span>: <span class="string">"nuevo-usuario"</span>,
+  <span class="string">"email"</span>: <span class="string">"usuario@example.com"</span>,
+  <span class="string">"password"</span>: <span class="string">"secure-password"</span>,
+  <span class="string">"role"</span>: <span class="string">"user"</span>
+}
+
+<span class="comment"># Actualizar usuario</span>
+PUT /api/users/{id}
+
+<span class="comment"># Eliminar usuario</span>
+DELETE /api/users/{id}</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Hipervisores (Hypervisors)</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Listar hipervisores</span>
+GET /api/hypervisors
+
+<span class="comment"># Obtener estado de hipervisor</span>
+GET /api/hypervisors/{id}
+
+<span class="comment"># Añadir hipervisor</span>
+POST /api/hypervisors
+{
+  <span class="string">"name"</span>: <span class="string">"KVM-Server-1"</span>,
+  <span class="string">"type"</span>: <span class="string">"kvm"</span>,
+  <span class="string">"host"</span>: <span class="string">"192.168.1.100"</span>,
+  <span class="string">"port"</span>: <span class="number">16509</span>
+}
+
+<span class="comment"># Eliminar hipervisor</span>
+DELETE /api/hypervisors/{id}</code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Ejemplo de Integración con Python</h3>
+                    <div class="code-block" data-language="python">
+<button class="copy-btn">Copiar</button>
+<code><span class="keyword">import</span> requests
+
+<span class="comment"># Configuración</span>
+BASE_URL = <span class="string">"https://isardvdi.local/api"</span>
+USERNAME = <span class="string">"admin"</span>
+PASSWORD = <span class="string">"your-password"</span>
+
+<span class="comment"># Obtener token</span>
+<span class="keyword">def</span> <span class="function">get_token</span>():
+    response = requests.post(
+        f<span class="string">"{BASE_URL}/auth/token"</span>,
+        json={<span class="string">"username"</span>: USERNAME, <span class="string">"password"</span>: PASSWORD}
+    )
+    <span class="keyword">return</span> response.json()[<span class="string">"access"</span>]
+
+<span class="comment"># Crear escritorio</span>
+<span class="keyword">def</span> <span class="function">create_desktop</span>(token, name, template):
+    headers = {<span class="string">"Authorization"</span>: f<span class="string">"Bearer {token}"</span>}
+    data = {
+        <span class="string">"name"</span>: name,
+        <span class="string">"template"</span>: template,
+        <span class="string">"ram"</span>: <span class="number">2048</span>,
+        <span class="string">"vcpus"</span>: <span class="number">2</span>
+    }
+    response = requests.post(
+        f<span class="string">"{BASE_URL}/desktops"</span>,
+        headers=headers,
+        json=data
+    )
+    <span class="keyword">return</span> response.json()
+
+<span class="comment"># Uso</span>
+token = get_token()
+desktop = create_desktop(token, <span class="string">"Mi Escritorio"</span>, <span class="string">"ubuntu-22.04"</span>)
+print(f<span class="string">"Escritorio creado: {desktop['id']}"</span>)</code></div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting" class="section">
+                <div class="section-header">
+                    <div class="section-icon">🔍</div>
+                    <div>
+                        <h2 class="section-title">Troubleshooting</h2>
+                        <p class="section-subtitle">Solución de problemas comunes</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Problemas Comunes</h3>
+                    
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <span class="accordion-title">No puedo acceder a la interfaz web</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p><strong>Causas posibles:</strong></p>
+                                    <ul>
+                                        <li>Los contenedores no están iniciados</li>
+                                        <li>El puerto 443 está bloqueado por el firewall</li>
+                                        <li>Problemas con el certificado SSL</li>
+                                    </ul>
+                                    
+                                    <p><strong>Soluciones:</strong></p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Verificar estado de contenedores</span>
+docker-compose ps
+
+<span class="comment"># Ver logs</span>
+docker-compose logs -f
+
+<span class="comment"># Reiniciar contenedores</span>
+docker-compose restart
+
+<span class="comment"># Verificar puertos</span>
+sudo netstat -tlnp | grep -E ':(80|443)'
+
+<span class="comment"># Abrir puertos en firewall</span>
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Los escritorios no se inician</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p><strong>Causas posibles:</strong></p>
+                                    <ul>
+                                        <li>El hipervisor no está configurado correctamente</li>
+                                        <li>No hay suficientes recursos disponibles</li>
+                                        <li>Problemas con la plantilla</li>
+                                    </ul>
+                                    
+                                    <p><strong>Soluciones:</strong></p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Verificar estado del hipervisor</span>
+virsh nodeinfo
+
+<span class="comment"># Verificar recursos disponibles</span>
+virsh freemem --all
+virsh vcpuinfo --all
+
+<span class="comment"># Ver logs de libvirt</span>
+sudo journalctl -u libvirtd -f
+
+<span class="comment"># Reiniciar libvirt</span>
+sudo systemctl restart libvirtd</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Conexión VNC falla</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p><strong>Causas posibles:</strong></p>
+                                    <ul>
+                                        <li>Puertos VNC bloqueados</li>
+                                        <li>Problemas con WebSocket</li>
+                                        <li>Configuración de proxy inverso incorrecta</li>
+                                    </ul>
+                                    
+                                    <p><strong>Soluciones:</strong></p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Verificar puertos VNC</span>
+sudo netstat -tlnp | grep 59
+
+<span class="comment"># Abrir rango de puertos VNC</span>
+sudo ufw allow 5900:6000/tcp
+
+<span class="comment"># Verificar configuración de nginx</span>
+sudo nginx -t
+sudo systemctl restart nginx</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Autenticación LDAP falla</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p><strong>Causas posibles:</strong></p>
+                                    <ul>
+                                        <li>Credenciales incorrectas</li>
+                                        <li>Conectividad con el servidor LDAP</li>
+                                        <li>Configuración de DN incorrecta</li>
+                                    </ul>
+                                    
+                                    <p><strong>Soluciones:</strong></p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Probar conexión LDAP</span>
+ldapsearch -x -H ldap://ad.example.com -D "CN=admin,DC=example,DC=com" -W
+
+<span class="comment"># Verificar configuración</span>
+python manage.py test_ldap
+
+<span class="comment"># Ver logs de autenticación</span>
+docker-compose logs -f isardvdi | grep -i ldap</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">Rendimiento lento de escritorios</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p><strong>Causas posibles:</strong></p>
+                                    <ul>
+                                        <li>Recursos insuficientes</li>
+                                        <li>Almacenamiento lento</li>
+                                        <li>Problemas de red</li>
+                                    </ul>
+                                    
+                                    <p><strong>Soluciones:</strong></p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Verificar uso de recursos</span>
+htop
+iostat -x 1
+
+<span class="comment"># Optimizar almacenamiento</span>
+<span class="comment"># Usar SSD/NVMe para almacenamiento de VMs</span>
+
+<span class="comment"># Aumentar recursos de escritorio</span>
+<span class="comment"># Editar configuración de plantilla</span></code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Herramientas de Diagnóstico</h3>
+                    <p>Use estas herramientas para diagnosticar problemas:</p>
+                    
+                    <div class="grid-2">
+                        <div>
+                            <h4>Logs del Sistema</h4>
+                            <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Logs de Isard VDI</span>
+docker-compose logs -f
+
+<span class="comment"># Logs de libvirt</span>
+sudo journalctl -u libvirtd -f
+
+<span class="comment"># Logs de nginx</span>
+sudo tail -f /var/log/nginx/error.log</code></div>
+                        </div>
+                        <div>
+                            <h4>Diagnóstico de Red</h4>
+                            <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Verificar conectividad</span>
+ping isardvdi.local
+
+<span class="comment"># Verificar puertos</span>
+nmap -p 80,443,5900-6000 isardvdi.local
+
+<span class="comment"># Verificar WebSocket</span>
+wscat -c wss://isardvdi.local/ws/desktop/1</code></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" class="section">
+                <div class="section-header">
+                    <div class="section-icon">❓</div>
+                    <div>
+                        <h2 class="section-title">Preguntas Frecuentes (FAQ)</h2>
+                        <p class="section-subtitle">Respuestas a las preguntas más comunes</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="accordion">
+                        <div class="accordion-item active">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Isard VDI es gratuito?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Sí, Isard VDI es completamente gratuito y de código abierto bajo la licencia AGPL-3.0. Puede usarlo, modificarlo y distribuirlo libremente.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Cuántos usuarios concurrentes soporta?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>El número de usuarios concurrentes depende de los recursos de su servidor. Con un servidor adecuado (16+ GB RAM, 8+ vCPUs), puede soportar 50-100 usuarios concurrentes. Para más usuarios, considere usar múltiples hipervisores o Kubernetes.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Puedo usar Isard VDI en la nube?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Sí, Isard VDI puede desplegarse en cualquier proveedor de nube que soporte Docker o Kubernetes, como AWS, Google Cloud, Azure, DigitalOcean, etc.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Qué sistemas operativos soporta como escritorios?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Isard VDI soporta cualquier sistema operativo que pueda virtualizarse, incluyendo Windows (7, 10, 11, Server), Linux (Ubuntu, Debian, CentOS, Fedora, etc.), y macOS (con ciertas limitaciones).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Cómo realizo backup de los escritorios?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Puede realizar backup de los escritorios usando snapshots de libvirt o copiando los archivos de disco de las VMs. También puede configurar backups automáticos usando herramientas como rsync o soluciones de backup de nube.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Puedo integrar Isard VDI con mi sistema de gestión de usuarios existente?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Sí, Isard VDI soporta integración con LDAP, Active Directory, y OAuth2. También puede usar la API REST para integración con sistemas personalizados.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Hay soporte técnico disponible?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Como proyecto de código abierto, el soporte comunitario está disponible a través de GitLab Issues y foros. También puede contratar soporte comercial a través de los desarrolladores del proyecto.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span class="accordion-title">¿Cómo actualizo Isard VDI a la última versión?</span>
+                                <span class="accordion-icon">▼</span>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="accordion-body">
+                                    <p>Para actualizar, simplemente ejecute:</p>
+                                    <div class="code-block" data-language="bash">
+<button class="copy-btn">Copiar</button>
+<code><span class="comment"># Actualizar el repositorio</span>
+git pull
+
+<span class="comment"># Reconstruir y reiniciar contenedores</span>
+docker-compose down
+docker-compose pull
+docker-compose up -d</code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="footer-links">
+                    <a href="https://isard.gitlab.io/isardvdi-docs/es/" target="_blank" class="footer-link">Documentación Oficial</a>
+                    <a href="https://gitlab.com/isard/isardvdi" target="_blank" class="footer-link">GitLab</a>
+                    <a href="https://github.com/isard-vdi" target="_blank" class="footer-link">GitHub</a>
+                </div>
+                <p>Manual de Implementación Isard VDI - Basado en la documentación oficial</p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Última actualización: 2024</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-top" id="scrollTop">
+        ↑
+    </div>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const item = header.parentElement;
+                const isActive = item.classList.contains('active');
+                
+                // Close all items
+                document.querySelectorAll('.accordion-item').forEach(i => i.classList.remove('active'));
+                
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                }
+            });
+        });
+
+        // Sidebar navigation active state
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.sidebar-link');
+
+        function updateActiveNav() {
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav();
+
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Copy button functionality
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const codeBlock = btn.parentElement;
+                const code = codeBlock.querySelector('code').textContent;
+                
+                try {
+                    await navigator.clipboard.writeText(code);
+                    btn.textContent = '¡Copiado!';
+                    btn.classList.add('copied');
+                    
+                    setTimeout(() => {
+                        btn.textContent = 'Copiar';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                } catch (err) {
+                    console.error('Error al copiar:', err);
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm.length < 2) {
+                // Reset all sections visibility
+                document.querySelectorAll('.section').forEach(section => {
+                    section.style.display = 'block';
+                });
+                return;
+            }
+            
+            // Search in sections
+            document.querySelectorAll('.section').forEach(section => {
+                const text = section.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.card, .feature-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

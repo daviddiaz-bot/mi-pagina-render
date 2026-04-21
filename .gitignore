@@ -1,15 +1,7 @@
-# Archivos grandes de Script
-Script/Ejecuciones Remotas/prep/VMware-viewagent-x86_64-7.4.0-7400533.exe
-Script/Ejecuciones Remotas/prep/VMwareOSOptimizationTool.exe
-Script/Ejecuciones Remotas/prep/VMwareOSOptimizationTool.exe.config
-Script/Ejecuciones Remotas/Actualizacion/Windows10Upgrade9252.exe
-Script/SrPackage_2016.05.5.16.exe
-Script/Ejecuciones Remotas/RestriccionPowerShell/PsExec.exe
-Script/Ejecuciones Remotas/RestriccionPowerShell/RemovPowerShell/PsExec.exe
-Script/Ejecuciones Remotas/prep/SDelete/sdelete.exe
-Script/Ejecuciones Remotas/prep/SDelete/sdelete64.exe
+# Excluir toda la carpeta Script
+Script/
 
-# Archivos de instalación grandes
+# Archivos grandes
 *.exe
 *.msi
 *.zip
